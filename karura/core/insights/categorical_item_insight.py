@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 from karura.core.insight import Insight
 
 
-class CategoryInsight(Insight):
+class CategoricalItemInsight(Insight):
 
-    def __init__(self, lang="ja"):
-        super().__init__(lang)
+    def __init__(self):
+        super().__init__()
         self.index.as_column_check()
     
     def adopt(self, dfe):
@@ -21,7 +22,7 @@ class CategoryInsight(Insight):
             freq = s.value_counts()
 
             if len(freq) / c <= 0.5:
-                # records is accumulated by elements
+                # records have to be accumulated by elements
                 return True
             
             return False
@@ -32,8 +33,9 @@ class CategoryInsight(Insight):
                 ts.append(c)
         
         if len(ts) > 0:
-            self.advice = {
-                "ja": "{} seems to be categorical column. ok?".format(ts)
+            self.description = {
+                "ja": "{} は分類項目のようです。分類項目として処理してよいですか？".format(ts),
+                "en": "{} seems to be categorical column. ok?".format(ts)
             }
 
         return ts

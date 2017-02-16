@@ -9,6 +9,7 @@ class Analyst():
         self.insights = insights
         self._column_checked = False
         self._row_checked = False
+        self._preprocessing = False
         self._model_checked = False
         self._insight = None
     
@@ -31,10 +32,10 @@ class Analyst():
         insights = InsightIndex.query_column_checks(self.insights)
         if len(insights) == 0 or self._column_checked:
             self.column_checked = True
-            return True
+            return True, []
         else:
-            self._proceed(insights)
-            return False
+            descriptions = self._proceed(insights)
+            return False, descriptions
 
     def has_insight(self):
         if self._insight is not None:
@@ -43,13 +44,16 @@ class Analyst():
             return False
 
     def _proceed(self, insights):
+        descriptions = []
         for i in insights:
-            if i.is_invoked_by(self.dfe):
+            if i.is_applicable(self.dfe):
                 if i.automatic:
+                    descriptions.append(i.describe())
                     i.apply(self.dfe)
                 else:
                     self._insight = i
                     break
+        return descriptions
 
     def resolve(self, adopt=True):
         if self._insight is not None:

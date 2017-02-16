@@ -1,1 +1,3 @@
-from .category_insight import CategoryInsight
+from .categorical_item_insight import CategoricalItemInsight
+from .row_count_insight import RowCountInsight
+from .numerical_scaling_insight import NumericalScalingInsight

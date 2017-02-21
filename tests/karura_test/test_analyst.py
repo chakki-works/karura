@@ -29,8 +29,22 @@ class TestAnalyst(unittest.TestCase):
                     print(d)
             if analyst.has_insight():
                 print(analyst.describe_insight())
-                analyst.resolve(True)
-
+                if isinstance(analyst._insight, I.TargetConfirmInsight):
+                    reply = "Survived"
+                    print(">{}".format(reply))
+                    analyst.resolve(reply)
+                elif isinstance(analyst._insight, I.ColumnIgnoranceInsight):
+                    reply = "PassengerId, Cabin, Ticket, Name"
+                    print(">{}".format(reply))
+                    analyst.resolve(reply)
+                else:
+                    reply = True
+                    print(">{}".format(reply))
+                    analyst.resolve(reply)
+        
+        if analyst.get_model_insight():
+            m = analyst.get_model_insight()
+            print("Accuracy is {}".format(m.score))
 
 if __name__ == "__main__":
     unittest.main()

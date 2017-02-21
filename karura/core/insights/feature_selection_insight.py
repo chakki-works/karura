@@ -60,3 +60,4 @@ class FeatureSelectionInsight(ModelSelectionInsight):
                 "ja": "項目{}は、予測に有効でないため削除しました。".format(eliminated),
                 "en": "Columns {} are eliminated because they are not useful for prediction.".format(eliminated)
             }
+        return True

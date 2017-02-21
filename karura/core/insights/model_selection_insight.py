@@ -130,10 +130,7 @@ class ModelSelectionInsight(Insight):
         else:
             self.score = r2_score(test_y, predictions)
         
-        self.description = {
-            "ja": "モデルの精度は{}です。".format(self.score),
-            "en": "Model's accuracy is {}.".format(self.score)
-        }
+        return True
 
     @classmethod
     def is_binary_classification(self, dfe):

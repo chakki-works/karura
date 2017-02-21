@@ -34,7 +34,9 @@ class NumericalScalingInsight(Insight):
             dfe.df[targets] = self.scaler.fit_transform(dfe.df[targets])
         else:
             dfe.df[targets] = self.scaler.transform(dfe.df[targets])
-    
+        
+        return True
+
     def get_insight_targets(self, dfe):
         return self._get_target_df(dfe).columns.tolist()
 

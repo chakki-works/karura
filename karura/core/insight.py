@@ -28,7 +28,7 @@ class Insight():
             return False
 
     def adopt(self, dfe, interpreted=None):
-        raise Exception("You have to implements apply method")
+        raise Exception("You have to implements adopt method")
     
     def get_insight_targets(self, dfe):
         return []
@@ -53,26 +53,30 @@ class InsightIndex():
         self.tags = [] if len(tags) == 0 else tags
     
     def as_column_check(self):
-        self.append_tag(self.COLUMN_CHECK_TAG)
+        self.set_tag(self.COLUMN_CHECK_TAG)
     
     def as_row_check(self):
-        self.append_tag(self.ROW_CHECK_TAG)
+        self.set_tag(self.ROW_CHECK_TAG)
     
     def as_preprocessing(self):
-        self.append_tag(self.PREPROCESSING)
+        self.set_tag(self.PREPROCESSING)
     
     def as_feature_augmentation(self):
-        self.append_tag(self.FEATURE_AUGMENTATION)
+        self.set_tag(self.FEATURE_AUGMENTATION)
 
     def as_feature_selection(self):
-        self.append_tag(self.FEATURE_SELECTION)
+        self.set_tag(self.FEATURE_SELECTION)
 
     def as_model_selection(self):
-        self.append_tag(self.MODEL_SELECTION)
+        self.set_tag(self.MODEL_SELECTION)
 
     def append_tag(self, tag_name):
         if tag_name not in self.tags:
             self.tags.append(tag_name)
+
+    def set_tag(self, tag_name):
+        self.tags = []
+        self.tags.append(tag_name)
 
     @classmethod
     def query(cls, insights, is_done=None, tag=""):

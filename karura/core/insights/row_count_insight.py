@@ -24,3 +24,4 @@ class RowCountInsight(Insight):
         if not interpreted:
             return 0
         dfe.df = dfe.df.head(self.max_row)
+        return True

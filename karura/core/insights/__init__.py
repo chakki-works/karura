@@ -4,3 +4,5 @@ from .numerical_scaling_insight import NumericalScalingInsight
 from .categorical_to_dummy_insight import CategoricalToDummyInsight
 from .feature_selection_insight import FeatureSelectionInsight
 from .model_selection_insight import ModelSelectionInsight
+from .target_confirmation_insight import TargetConfirmInsight
+from .column_ignorance_insight import ColumnIgnoranceInsight

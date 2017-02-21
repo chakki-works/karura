@@ -13,6 +13,7 @@ class CategoricalItemInsight(Insight):
             return 0
         targets = self.get_insight_targets(dfe)
         dfe.to_categorical(targets)
+        return True
     
     def get_insight_targets(self, dfe):
         df = dfe.df

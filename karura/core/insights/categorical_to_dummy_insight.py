@@ -18,6 +18,7 @@ class CategoricalToDummyInsight(Insight):
         dfe.df.drop(targets, axis=1, inplace=True)  # drop original column
         dfe.to_categorical(dummies.columns.tolist())
         dfe.sync()
+        return True
 
     def get_insight_targets(self, dfe):
         return dfe.get_features(FType.categorical).columns.tolist()

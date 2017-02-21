@@ -38,6 +38,13 @@ class Analyst():
             if not self._check_list[c]:
                 done = False
         return done
+    
+    def get_model_insight(self):
+        m_insights = InsightIndex.query(self.insights, is_done=True, tag=InsightIndex.MODEL_SELECTION)
+        if len(m_insights) > 0:
+            return m_insights[0]
+        else:
+            return None
 
     def describe_insight(self):
         if self.has_insight():
@@ -83,8 +90,7 @@ class Analyst():
                 if i.automatic:
                     if i.describe():
                         self._descriptions.append(i.describe())
-                    i.adopt(self.dfe)
-                    i.index.done = True
+                    i.index.done = i.adopt(self.dfe)
                 else:
                     self._insight = i
                     break
@@ -96,10 +102,10 @@ class Analyst():
     def resolve(self, reply):
         if self._insight is not None:
             interpreted = self._insight.interpret(reply)
-            self._insight.adopt(self.dfe, interpreted)
+            done = self._insight.adopt(self.dfe, interpreted)
             d = self._insight.describe()
             if d:
                 self._descriptions.append(d)
-
-            self._insight.index.done = True
-            self._insight = None
+            if done:
+                self._insight.index.done = True
+                self._insight = None

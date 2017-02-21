@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import r2_score
 from karura.core.insight import Insight
 from karura.core.dataframe_extension import FType
+from karura.core.analysis_stop_exception import AnalysisStopException
 
 
 class ModelSelectionInsight(Insight):
@@ -23,36 +24,37 @@ class ModelSelectionInsight(Insight):
         self.index.as_model_selection()
         self.model = None
         self.score = 0
+        self.automatic = True
     
     def is_applicable(self, dfe):
+        self.description = {}
         if dfe.df.shape[0] < self.min_count:
             self.description = {
                 "ja": "データが少なすぎます。モデルを作成するには、最低{}件データを集めてください".format(self.min_count),
                 "en": "Your data is too small. You have to collect the data at least {} count of data.".format(self.min_count)
             }
-            return False
         elif dfe.df.shape[0] < dfe.df.shape[1]:
             self.description = {
                 "ja": "項目の数に対して、データが少なすぎます。せめて項目の数以上にはデータを集める必要があります。",
                 "en": "Your data is too small. You have to collect the data greather than number of columns."
             }
-            return False            
         elif dfe.get_target_ftype() is None:
             self.description = {
                 "ja": "予測対象、またその項目の種別(数値か、分類か)を指定する必要があります。",
                 "en": "You have to define prediction and its type."
             }
-            return False
         elif not dfe.get_target_ftype() in (FType.categorical, FType.numerical):
             self.description = {
                 "ja": "予測対象{}は、数値か、分類かの項目にする必要があります".format(dfe.target),
                 "en": "You have to make prediction target as numerical or categorical.".format(dfe.target)
             }
-            return False
-        else:
-            return True
+        
+        if len(self.description) > 0:
+            raise AnalysisStopException(self)
 
-    def adopt(self, dfe):
+        return True
+
+    def adopt(self, dfe, interpreted=None):
         model_and_params = []
         scoring = "accuracy"
 

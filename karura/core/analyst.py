@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.insight import InsightIndex
+from karura.core.analysis_stop_exception import AnalysisStopException
 
 
 class Analyst():
@@ -17,16 +18,22 @@ class Analyst():
             InsightIndex.FEATURE_SELECTION,
             InsightIndex.MODEL_SELECTION
         ]
+        self._halt = False
         self._insight = None
-        self._init_check_list()
         self._descriptions = []
+        self.init()
     
-    def _init_check_list(self):
+    def init(self):
+        self._halt = False
+        self._descriptions = []
         for c in self._check_target:
             self._check_list[c] = False
     
     def is_done(self):
         done = True
+        if self._halt:
+            return done
+
         for c in self._check_target:
             if not self._check_list[c]:
                 done = False
@@ -52,7 +59,12 @@ class Analyst():
             return True
         else:
             if len(insights) > 0:
-                self._proceed(insights)
+                try:
+                    self._proceed(insights)
+                except AnalysisStopException as ex:
+                    self._halt = True
+                    if ex.insight.describe():
+                        self._descriptions = [ex.insight.describe()]
             return False
 
     def has_insight(self):
@@ -69,22 +81,25 @@ class Analyst():
         for i in insights:
             if i.is_applicable(self.dfe):
                 if i.automatic:
-                    d = i.describe()
-                    if d:
-                        self._descriptions.append(d)
+                    if i.describe():
+                        self._descriptions.append(i.describe())
                     i.adopt(self.dfe)
                     i.index.done = True
                 else:
                     self._insight = i
                     break
+            else:
+                if i.describe():
+                    self._descriptions.append(i.describe())
+                i.index.done = True
 
-    def resolve(self, adopt=True):
+    def resolve(self, reply):
         if self._insight is not None:
-            if adopt:
-                self._insight.adopt(self.dfe)
-                d = self._insight.describe()
-                if d:
-                    self._descriptions.append(d)
+            interpreted = self._insight.interpret(reply)
+            self._insight.adopt(self.dfe, interpreted)
+            d = self._insight.describe()
+            if d:
+                self._descriptions.append(d)
 
             self._insight.index.done = True
             self._insight = None

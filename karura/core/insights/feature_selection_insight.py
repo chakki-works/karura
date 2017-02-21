@@ -17,7 +17,7 @@ class FeatureSelectionInsight(ModelSelectionInsight):
         self.cv_count = 3
         self.index.as_feature_selection()
     
-    def adopt(self, dfe):
+    def adopt(self, dfe, interpreted=None):
         models = []
         # about scoring, please see following document
         # http://scikit-learn.org/stable/modules/model_evaluation.html#common-cases-predefined-values

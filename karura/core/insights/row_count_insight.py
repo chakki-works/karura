@@ -20,5 +20,7 @@ class RowCountInsight(Insight):
         else:
             return False
 
-    def adopt(self, dfe):
+    def adopt(self, dfe, interpreted=None):
+        if not interpreted:
+            return 0
         dfe.df = dfe.df.head(self.max_row)

@@ -40,13 +40,18 @@ def talk(message):
         message.reply("karura is not found. please upload file first.")
     
     karura = Scope.Karura
-    karura.analyze()
-    if karura.has_insight():
-        message.reply(karura.describe_insight())
-    else:
-        print(karura.dfe.df.dtypes)
-        message.reply("Done analyze!")
 
+    done = karura.analyze()
+
+    if not done:
+        if len(karura.get_descriptions()) > 0:
+            for d in karura.get_descriptions():
+                message.reply(d)
+
+        if karura.has_insight():
+            message.reply(karura.describe_insight())
+        else:
+            talk(message)
 
 @respond_to(r"はい|yes", re.IGNORECASE)
 def resolve_yes(message):

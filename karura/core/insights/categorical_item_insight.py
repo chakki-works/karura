@@ -8,7 +8,9 @@ class CategoricalItemInsight(Insight):
         super().__init__()
         self.index.as_column_check()
     
-    def adopt(self, dfe):
+    def adopt(self, dfe, interpreted=None):
+        if not interpreted:
+            return 0
         targets = self.get_insight_targets(dfe)
         dfe.to_categorical(targets)
     

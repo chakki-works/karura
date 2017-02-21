@@ -27,7 +27,7 @@ class NumericalScalingInsight(Insight):
         self.path = path
         joblib.dump(self.scaler, self._make_file_path(path))
 
-    def adopt(self, dfe):
+    def adopt(self, dfe, interpreted=None):
         targets = self.get_insight_targets(dfe)
         dfe.df.dropna(inplace=True)
         if not self._freeze:

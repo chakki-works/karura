@@ -9,8 +9,9 @@ class CategoricalToDummyInsight(Insight):
     def __init__(self):
         super().__init__()
         self.index.as_feature_augmentation()
+        self.automatic = True
     
-    def adopt(self, dfe):
+    def adopt(self, dfe, interpreted=None):
         targets = self.get_insight_targets(dfe)
         dummies = pd.get_dummies(dfe.df[targets])
         dfe.df = pd.concat([dfe.df, dummies], axis=1)

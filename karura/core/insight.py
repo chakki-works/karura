@@ -27,12 +27,18 @@ class Insight():
         else:
             return False
 
-    def adopt(self, dfe):
+    def adopt(self, dfe, interpreted=None):
         raise Exception("You have to implements apply method")
     
     def get_insight_targets(self, dfe):
         return []
-        
+    
+    def interpret(self, reply):
+        if reply:
+            return True
+        else:
+            return False
+
 
 class InsightIndex():
     COLUMN_CHECK_TAG = "column_check"

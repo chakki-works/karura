@@ -34,11 +34,11 @@ class TestAnalyst(unittest.TestCase):
                     print(">{}".format(reply))
                     analyst.resolve(reply)
                 elif isinstance(analyst._insight, I.ColumnIgnoranceInsight):
-                    reply = "PassengerId, Cabin, Ticket, Name"
+                    reply = "PassengerId, Ticket, Name"
                     print(">{}".format(reply))
                     analyst.resolve(reply)
                 else:
-                    reply = True
+                    reply = "+ Cabin"
                     print(">{}".format(reply))
                     analyst.resolve(reply)
         

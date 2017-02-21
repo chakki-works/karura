@@ -52,6 +52,10 @@ def talk(message):
             message.reply(karura.describe_insight())
         else:
             talk(message)
+    else:
+        if karura.get_model_insight():
+            m = karura.get_model_insight()
+            message.reply("精度は {}%です。".format(m.score))
 
 @respond_to(r"はい|yes", re.IGNORECASE)
 def resolve_yes(message):
@@ -64,6 +68,13 @@ def resolve_yes(message):
 def resolve_no(message):
     if Scope.Karura is not None and Scope.Karura.has_insight():
         Scope.Karura.resolve(False)
+        talk(message)
+
+
+@respond_to(r"(.+)")
+def refrection(message, reply):
+    if Scope.Karura is not None and Scope.Karura.has_insight():
+        Scope.Karura.resolve(reply)
         talk(message)
 
 

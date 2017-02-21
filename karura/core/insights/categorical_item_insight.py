@@ -9,9 +9,17 @@ class CategoricalItemInsight(Insight):
         self.index.as_column_check()
     
     def adopt(self, dfe, interpreted=None):
-        if not interpreted:
+        if isinstance(interpreted, bool) and not interpreted:
             return 0
         targets = self.get_insight_targets(dfe)
+        if isinstance(interpreted, list):
+            for a in interpreted:
+                trimed = [c for c in dfe.df.columns if c in a[1]]
+                if a[0]:
+                    targets += trimed
+                else:
+                    targets = [t for t in targets if t not in trimed]
+
         dfe.to_categorical(targets)
         return True
     
@@ -43,4 +51,26 @@ class CategoricalItemInsight(Insight):
 
         return ts
 
+    def interpret(self, reply):
+        if isinstance(reply, bool):
+            return reply
+        
+        text = reply.strip()
+        p_plus = text.find("+")
+        p_minus = text.find("-")
+        pos = [p for p in sorted([p_plus, p_minus]) if p > -1]
 
+        strip_split = lambda x: [e.strip() for e in x.split(",") if e.strip()]
+        if len(pos) == 0:
+            return True
+        else:
+            sign = True
+            if pos[0] == p_minus:
+                sign = False
+            one = text[pos[0]+1:]
+            the_ohter = ""
+            if len(pos) == 2:
+                one = text[pos[0]+1:pos[1]]
+                the_ohter = text[pos[1]+1:]
+            
+            return [(sign, strip_split(one)), (not sign, strip_split(the_ohter))]

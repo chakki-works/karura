@@ -31,7 +31,7 @@ class ModelSelectionInsight(Insight):
                 "en": "Your data is too small. You have to collect the data at least {} count of data.".format(self.min_count)
             }
             return False
-        elif dfe.shape[0] < dfe.shape[1]:
+        elif dfe.df.shape[0] < dfe.df.shape[1]:
             self.description = {
                 "ja": "項目の数に対して、データが少なすぎます。せめて項目の数以上にはデータを集める必要があります。",
                 "en": "Your data is too small. You have to collect the data greather than number of columns."
@@ -73,7 +73,7 @@ class ModelSelectionInsight(Insight):
             )
 
             model_and_params = [
-                random_forests, svm
+                random_forests, # svm
             ]
             if self.is_binary_classification(dfe):
                 scoring = "f1"
@@ -108,6 +108,7 @@ class ModelSelectionInsight(Insight):
         best_gv = None
         score = 0
         for m, p in model_and_params:
+            print("model {}".format(m.__class__.__name__))
             gv = GridSearchCV(m, p, scoring=scoring, cv=self.cv_count)
             gv.fit(train_x, train_y)
 
@@ -127,6 +128,11 @@ class ModelSelectionInsight(Insight):
         else:
             self.score = r2_score(test_y, predictions)
         
+        self.description = {
+            "ja": "モデルの精度は{}です。".format(self.score),
+            "en": "Model's accuracy is {}.".format(self.score)
+        }
+
     @classmethod
     def is_binary_classification(self, dfe):
         is_binary = False

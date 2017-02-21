@@ -29,6 +29,7 @@ class NumericalScalingInsight(Insight):
 
     def adopt(self, dfe):
         targets = self.get_insight_targets(dfe)
+        dfe.df.dropna(inplace=True)
         if not self._freeze:
             dfe.df[targets] = self.scaler.fit_transform(dfe.df[targets])
         else:

@@ -78,6 +78,9 @@ class DataFrameExtension():
             self.df[c] = self.df[c].astype("str")
         self.__convert_column(column_or_columns, FType.text, convert)
     
+    def to_unique(self, column_or_columns):
+        self.__convert_column(column_or_columns, FType.unique, None)
+    
     def sync(self):
         new_ftype = OrderedDict()
         for c in self.df.columns:
@@ -113,7 +116,8 @@ class DataFrameExtension():
     def __convert_column(self, column_or_columns, ftype, convert_func):
         column_names = self.__to_list(column_or_columns)
         for c in column_names:
-            convert_func(c)
+            if convert_func:
+                convert_func(c)
             self.ftypes[c] = ftype
 
     def __to_list(self, column_or_columns):

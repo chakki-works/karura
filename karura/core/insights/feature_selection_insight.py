@@ -24,7 +24,8 @@ class FeatureSelectionInsight(ModelSelectionInsight):
         scoring = "accuracy"
 
         if dfe.get_target_ftype() == FType.categorical:
-            models = [RandomForestClassifier(), SVC(kernel="linear")]
+            #models = [RandomForestClassifier(), SVC(kernel="linear")]
+            models = [RandomForestClassifier()]
             if self.is_binary_classification(dfe):
                 scoring = "f1"
             else:

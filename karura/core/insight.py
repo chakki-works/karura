@@ -1,3 +1,4 @@
+from enum import Enum
 from karura.env import get_lang
 
 
@@ -33,7 +34,6 @@ class Insight():
         return []
         
 
-
 class InsightIndex():
     COLUMN_CHECK_TAG = "column_check"
     ROW_CHECK_TAG = "row_check"
@@ -63,10 +63,6 @@ class InsightIndex():
 
     def as_model_selection(self):
         self.append_tag(self.MODEL_SELECTION)
-
-    @classmethod
-    def query_column_checks(cls, insights, done=False):
-        return cls.query(insights, done, cls.COLUMN_CHECK_TAG)
 
     def append_tag(self, tag_name):
         if tag_name not in self.tags:

@@ -1,0 +1,26 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-32
+cycler=0.10.0=py35_0
+icu=57.1=vc14_0
+jpeg=9b=vc14_0
+libpng=1.6.27=vc14_0
+matplotlib=2.0.0=np112py35_0
+mkl=2017.0.1=0
+numpy=1.12.0=py35_0
+openssl=1.0.2k=vc14_0
+pandas=0.19.2=np112py35_1
+pip=9.0.1=py35_1
+pyparsing=2.1.4=py35_0
+pyqt=5.6.0=py35_2
+python=3.5.2=0
+qt=5.6.2=vc14_3
+scikit-learn=0.18.1=np112py35_1
+scipy=0.18.1=np112py35_1
+setuptools=27.2.0=py35_1
+sip=4.18=py35_0
+six=1.10.0=py35_0
+tk=8.5.18=vc14_0
+vs2015_runtime=14.0.25123=0
+wheel=0.29.0=py35_0
+zlib=1.2.8=vc14_3

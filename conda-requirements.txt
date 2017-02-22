@@ -10,5 +10,16 @@ numpy=1.12.0=py35_nomkl_0
 scipy=0.18.1=np112py35_nomkl_1
 scikit-learn=0.18.1=np112py35_nomkl_1
 pandas=0.19.2=np112py35_1
+python-dateutil=2.6.0=py35_0
+pytz=2016.10=py35_0
+matplotlib=2.0.0=np112py35_0
+cycler=0.10.0=py35_0
+icu=58.1=1
+jpeg=9b=0
+libpng=1.6.27=0
+pyqt=5.6.0=py35_2
+qt=5.6.2=2
+tk=8.5.18=0
+zlib=1.2.8=3
 libgfortran=3.0.0=1
 openblas=0.2.19=0

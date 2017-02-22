@@ -24,11 +24,6 @@ class ColumnIgnoranceInsight(Insight):
 
             dfe.df.drop(columns, inplace=True, axis=1)
             dfe.sync()
-            self.description = {
-                "ja": "{}は分析の対象外となりました".format(columns),
-                "en": "Column {} are ignored.".format(columns)
-            }
-
         return True
     
     def interpret(self, reply):

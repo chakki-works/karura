@@ -1,5 +1,6 @@
 from enum import Enum
 from karura.env import get_lang
+from karura.core.description import Description
 
 
 class Insight():
@@ -11,6 +12,13 @@ class Insight():
         self.index = InsightIndex()
         self.automatic = False
     
+    def init_description(self):
+        for k in self.description:
+            if isinstance(self.description[k], Description):
+                self.description[k].delete()
+
+        self.description.clear()
+
     def describe(self):
         if self.lang in self.description:
             return self.description[self.lang]
@@ -20,13 +28,13 @@ class Insight():
             return ""
     
     def is_applicable(self, dfe):
-        self.description = {}  # initialize
+        self.init_description()
         its = self.get_insight_targets(dfe)
         if len(its) > 0:
             return True
         else:
             return False
-
+    
     def adopt(self, dfe, interpreted=None):
         raise Exception("You have to implements adopt method")
     

@@ -6,3 +6,4 @@ from .feature_selection_insight import FeatureSelectionInsight
 from .model_selection_insight import ModelSelectionInsight
 from .target_confirmation_insight import TargetConfirmInsight
 from .column_ignorance_insight import ColumnIgnoranceInsight
+from .na_frequency_insight import NAFrequencyCheckInsight

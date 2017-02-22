@@ -1,0 +1,11 @@
+order_id,customer_cd,price,amount,sales_date,comment
+1,"awesome store",100,10,2016/1/1,"ok bokujyo!!"
+2,"everyday is good",120,5,2016/2/1,"hey,I'm enjyoing"
+3,apple3,120,3,2016/1/2,"delicious apple"
+4,"awesome store",100,10,2016/1/1,"ok bokujyo!!"
+5,"tody consulting",1000,5,2016/2/1,"my English becomes better"
+6,Examples,10,100,2016/1/5,""
+7,"awesome store",100,10,2016/1/1,"ok bokujyo!!"
+8,apple3,100,10,2016/1/1,"ok bokujyo!!"
+9,"hungry people",12,45,2016/1/15,"Too hungry,Too much"
+10,"tody consulting",120,10,2016/1/10,sangria

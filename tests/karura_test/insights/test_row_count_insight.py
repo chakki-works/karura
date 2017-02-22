@@ -13,14 +13,14 @@ class TestRowCountInsight(unittest.TestCase):
     def test_insight(self):
         df = pd.read_csv(self.FILE_NAME)
         dfe = DataFrameExtension(df)
-        insight = RowCountInsight()
-        insight.max_row = 10
-        insight.get_insight_targets(dfe)
+        insight = RowCountInsight(max_count=50)
 
+        self.assertTrue(insight.is_applicable(dfe))
         self.assertTrue(insight.describe())
 
         insight.adopt(dfe)
-        self.assertEqual(dfe.df.shape[0], insight.max_row)
+        self.assertEqual(dfe.df.shape[0], insight.max_count)
+        print(dfe.df.head(5))
 
 
 if __name__ == "__main__":

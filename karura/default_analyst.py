@@ -6,6 +6,7 @@ from karura.env import get_lang
 def make_analyst(df):
     lang = get_lang()
     c_insight = I.CategoricalItemInsight()
+    na_insight = I.NAFrequencyCheckInsight()
     t_insight = I.TargetConfirmInsight()
     ig_insight = I.ColumnIgnoranceInsight()
     n_insight = I.NumericalScalingInsight()
@@ -14,6 +15,7 @@ def make_analyst(df):
     m_insight = I.ModelSelectionInsight()
     ay = Analyst(df, [
         c_insight,
+        na_insight,
         t_insight,
         ig_insight,
         n_insight,

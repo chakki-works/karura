@@ -20,16 +20,15 @@ class Analyst():
         ]
         self._halt = False
         self._insight = None
-        self._descriptions = []
+        self._need_confirmation = False
         self.init()
     
     def init(self):
         self._halt = False
-        self._descriptions = []
         for c in self._check_target:
             self._check_list[c] = False
     
-    def is_done(self):
+    def has_done(self):
         done = True
         if self._halt:
             return done
@@ -46,13 +45,13 @@ class Analyst():
         else:
             return None
 
-    def describe_insight(self):
-        if self.has_insight():
+    def describe(self):
+        if self._insight is not None:
             return self._insight.describe()
         else:
             return ""
-    
-    def analyze(self):
+
+    def step(self):
         # fetch remained insights
         insights = []
         for c in self._check_target:
@@ -62,50 +61,39 @@ class Analyst():
             else:
                 self._check_list[c] = True
         
-        if self.is_done():
-            return True
+        if self.has_done() or len(insights) == 0:
+            return None
         else:
-            if len(insights) > 0:
-                try:
-                    self._proceed(insights)
-                except AnalysisStopException as ex:
-                    self._halt = True
-                    if ex.insight.describe():
-                        self._descriptions = [ex.insight.describe()]
-            return False
+            self._insight = insights[0]
+            return self.__step()
 
-    def has_insight(self):
-        if self._insight is not None:
-            return True
-        else:
-            return False
+    def have_to_ask(self):
+        return self._need_confirmation
     
-    def get_descriptions(self):
-        return self._descriptions
-
-    def _proceed(self, insights):
-        self._descriptions = []
-        for i in insights:
-            if i.is_applicable(self.dfe):
+    def __step(self, reply=None):
+        i = self._insight
+        d = None
+        try:
+            i.init_description()
+            if reply is not None and self._need_confirmation:
+                interpreted = i.interpret(reply)
+                i.index.done = i.adopt(self.dfe, interpreted)
+                self._need_confirmation = False
+            elif i.is_applicable(self.dfe):
                 if i.automatic:
-                    if i.describe():
-                        self._descriptions.append(i.describe())
                     i.index.done = i.adopt(self.dfe)
+                    d = i.describe()
                 else:
-                    self._insight = i
-                    break
+                    d = i.describe()
+                    if d:
+                        self._need_confirmation = True
             else:
-                if i.describe():
-                    self._descriptions.append(i.describe())
-                i.index.done = True
+                d = i.describe()                
+    
+        except AnalysisStopException as ex:
+            self._halt = True
+        
+        return d
 
-    def resolve(self, reply):
-        if self._insight is not None:
-            interpreted = self._insight.interpret(reply)
-            done = self._insight.adopt(self.dfe, interpreted)
-            d = self._insight.describe()
-            if d:
-                self._descriptions.append(d)
-            if done:
-                self._insight.index.done = True
-                self._insight = None
+    def get_reply(self, reply):
+        self.__step(reply)

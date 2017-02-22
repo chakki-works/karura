@@ -8,6 +8,18 @@ class CategoricalItemInsight(Insight):
         super().__init__()
         self.index.as_column_check()
     
+    def is_applicable(self, dfe):
+        self.init_description()
+        ts = self.get_insight_targets(dfe)
+        if len(ts) > 0:
+            self.description = {
+                "ja": "{} は分類項目のようです。分類項目として処理してよいですか？".format(ts),
+                "en": "{} seems to be categorical column. ok?".format(ts)
+            }
+            return True
+        else:
+            return False
+
     def adopt(self, dfe, interpreted=None):
         if isinstance(interpreted, bool) and not interpreted:
             return 0
@@ -43,12 +55,6 @@ class CategoricalItemInsight(Insight):
             if is_categorical(df[c]):
                 ts.append(c)
         
-        if len(ts) > 0:
-            self.description = {
-                "ja": "{} は分類項目のようです。分類項目として処理してよいですか？".format(ts),
-                "en": "{} seems to be categorical column. ok?".format(ts)
-            }
-
         return ts
 
     def interpret(self, reply):

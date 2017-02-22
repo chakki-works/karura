@@ -1,0 +1,16 @@
+{
+    "name": "karura",
+    "description": "Bot that advises straight forward insight about data science",
+    "repository": "https://github.com/chakki-works/karura.git",
+    "keywords": ["Python", "slack"],
+    "env": {
+        "BUILDPACK_URL": "https://github.com/icoxfog417/conda-buildpack.git#patched",
+        "SLACK_TOKEN": {
+          "description": "A slack token for bot."
+        },
+        "LANG": {
+          "description": "Language that karura uses.",
+          "value": "ja or en"
+        }
+    }
+}

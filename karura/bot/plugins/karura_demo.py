@@ -71,19 +71,27 @@ def get_reply(message, reply):
     print("reply: {}".format(reply))
     if Scope.Karura is not None and Scope.Karura.have_to_ask():
         Scope.Karura.get_reply(reply)
+        return True
+    else:
+        return False
 
 
 @respond_to(r"(.+)")
 def refrection(message, reply):
     yes_ptn = r"はい|yes"
     no_ptn = r"いいえ|no"
+    replied = False
     if re.match(yes_ptn, reply):
-        get_reply(message, True)
+        replied = get_reply(message, True)
     elif re.match(no_ptn, reply):
-        get_reply(message, False)
+        replied = get_reply(message, False)
     else:
-        get_reply(message, reply)
-    talk(message)
+        replied = get_reply(message, reply)
+
+    if replied:
+        talk(message)
+    else:
+        message.reply("最初にファイルをアップロードしてください")
 
 
 @default_reply

@@ -1,3 +1,2 @@
 pykintone>=0.3.6
-requests>=2.11.1
 slackbot>=0.4.1

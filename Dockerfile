@@ -10,7 +10,10 @@ ENV https_proxy $http_proxy
 
 # Remove (large file sizes) MKL optimizations.
 RUN conda install -y nomkl
-RUN conda install -y numpy scipy scikit-learn matplotlib pandas
+
+# matplotlib issue
+# https://github.com/ContinuumIO/anaconda-issues/issues/1068
+RUN conda install -y numpy scipy scikit-learn matplotlib pandas pyqt=4.11
 
 ADD ./requirements.txt /tmp/requirements.txt
 RUN pip install -qr /tmp/requirements.txt

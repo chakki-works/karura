@@ -22,4 +22,7 @@ RUN pip install -qr /tmp/requirements.txt
 ADD ./karura /opt/karura/
 WORKDIR /opt/karura/
 
+RUN unset http_proxy
+RUN unset https_proxy
+
 CMD python /opt/karura/bot/run.py

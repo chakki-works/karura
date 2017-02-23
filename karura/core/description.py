@@ -1,6 +1,8 @@
 import os
 import tempfile
 from contextlib import contextmanager
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 

@@ -20,7 +20,7 @@ RUN pip install -qr /tmp/requirements.txt
 
 # Add our code
 ADD ./karura /opt/karura/
-WORKDIR /opt/karura/
+WORKDIR /opt/karura/
 
 RUN unset http_proxy
 RUN unset https_proxy

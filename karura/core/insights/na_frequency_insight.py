@@ -17,7 +17,7 @@ class NAFrequencyCheckInsight(Insight):
         if len(its) > 0:
             na_rates = dfe.df.isnull().sum() / len(dfe.df)  # ignores na.
             pic = ImageFile.create()
-            with pic.plot() as fig:
+            with pic.plot() as plt_fig:
                 na_rates.plot.bar()
             
             self.description = {

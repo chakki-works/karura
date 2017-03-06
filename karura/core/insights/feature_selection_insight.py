@@ -48,16 +48,20 @@ class FeatureSelectionInsight(ModelSelectionInsight):
             
             feature_masks.append(rfecv.support_)
         
+        selected_mask = []
         if len(feature_masks) < 2:
-            eliminates = np.logical_not(feature_masks[0])
+            selected_mask = feature_masks[0]
         else:
-            eliminates = np.logical_not(np.logical_or(*feature_masks))
-        eliminated = features.columns[eliminates]
-        dfe.df.drop(eliminated, inplace=True, axis=1)
+            selected_mask = np.logical_or(*feature_masks)  # take the feature that some models take
+
+        eliminates = features.columns[np.logical_not(selected_mask)]
+        dfe.df.drop(eliminates, inplace=True, axis=1)
         dfe.sync()
 
+        selected = features.columns[selected_mask].tolist()
+
         self.description = {
-                "ja": "項目{}は、予測に有効でないため削除しました。".format(eliminated),
-                "en": "Columns {} are eliminated because they are not useful for prediction.".format(eliminated)
+                "ja": "項目{}は予測に有効な項目です。これらを利用し、モデルを構築します。".format(",".join(selected)),
+                "en": "Columns {} are useful to predict. I'll use these to make model.".format(",".join(selected))
             }
         return True

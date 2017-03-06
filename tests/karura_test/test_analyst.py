@@ -3,8 +3,11 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import math
 import unittest
+import numpy as np
 import pandas as pd
+from sklearn.datasets import make_classification
 from karura.core.dataframe_extension import DataFrameExtension
+from karura.core.analyst import Analyst
 from karura.default_analyst import make_analyst
 import karura.core.insights as I
 
@@ -12,7 +15,7 @@ import karura.core.insights as I
 class TestAnalyst(unittest.TestCase):
     FILE_NAME = os.path.join(os.path.dirname(__file__), "../data/titanic_train.csv")
 
-    def test_analyst(self):
+    def xtest_analyst(self):
         df = pd.read_csv(self.FILE_NAME)
         analyst = make_analyst(df)
         """
@@ -57,6 +60,22 @@ class TestAnalyst(unittest.TestCase):
         if analyst.get_model_insight():
             m = analyst.get_model_insight()
             print("Accuracy is {}".format(m.score))
+
+    def test_model_describe(self):
+        X, y = make_classification(n_samples=1000, n_features=10, n_informative=3, n_classes=3, random_state=0)
+
+        df = pd.DataFrame(np.hstack((y.reshape(-1, 1), X)), columns=["y"]+["f_" + str(i) for i in range(X.shape[1])])
+        analyst = Analyst(df, [I.ModelSelectionInsight()])
+        analyst.dfe.target = "y"
+        analyst.dfe.to_categorical("y")
+        d = analyst.step()
+        print(d)
+        analyst.step()
+        self.assertTrue(analyst.has_done())
+        d = analyst.interpret()
+        self.assertTrue(d)
+        print(d)
+
 
 if __name__ == "__main__":
     unittest.main()

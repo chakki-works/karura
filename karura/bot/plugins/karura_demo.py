@@ -54,9 +54,8 @@ def talk(message):
                 talk(message)
 
     else:
-        if karura.get_model_insight():
-            m = karura.get_model_insight()
-            send(message, "精度は {}%です。".format(m.score))
+        m = karura.interpret()
+        send(message, m)
 
 
 def send(message, description):
@@ -91,7 +90,7 @@ def refrection(message, reply):
     if replied:
         talk(message)
     else:
-        message.reply("最初にファイルをアップロードしてください")
+        message.reply("Please upload the data file to me!")
 
 
 @default_reply

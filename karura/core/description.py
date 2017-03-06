@@ -24,7 +24,7 @@ class ImageFile():
         plt.rcParams["font.family"] = "Yu Mincho"
         fig = plt.figure()
 
-        yield fig
+        yield plt, fig
 
         plt.tight_layout()
         fig.savefig(self.path)

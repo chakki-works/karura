@@ -1,6 +1,9 @@
 from collections import OrderedDict
+import numpy as np
+import pandas as pd
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.insight import InsightIndex
+from karura.core.interpretation import ModelInterpretation
 from karura.core.analysis_stop_exception import AnalysisStopException
 
 
@@ -38,18 +41,19 @@ class Analyst():
                 done = False
         return done
     
-    def get_model_insight(self):
-        m_insights = InsightIndex.query(self.insights, is_done=True, tag=InsightIndex.MODEL_SELECTION)
-        if len(m_insights) > 0:
-            return m_insights[0]
-        else:
-            return None
-
     def describe(self):
         if self._insight is not None:
             return self._insight.describe()
         else:
             return ""
+
+    def interpret(self):
+        m_insights = InsightIndex.query(self.insights, is_done=True, tag=InsightIndex.MODEL_SELECTION)
+        if len(m_insights) == 0 or m_insights[0].model is None:
+            return ""
+        else:
+            mi = ModelInterpretation()
+            return mi.interpret(self.dfe, m_insights[0])
 
     def step(self):
         # fetch remained insights
@@ -88,10 +92,11 @@ class Analyst():
                     if d:
                         self._need_confirmation = True
             else:
-                d = i.describe()                
+                 d = i.describe()                
     
         except AnalysisStopException as ex:
             self._halt = True
+            d = ex.insight.describe()
         
         return d
 

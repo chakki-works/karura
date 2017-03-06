@@ -24,7 +24,6 @@ class NAFrequencyCheckInsight(Insight):
                 "ja": Description("{} は欠損値が多い項目になっています。除外してもよいですか？".format(its), pic),
                 "en": Description("{} includes much n/a values. Could I exclude these?".format(its), pic)
             }
-
             return True
         else:
             return False

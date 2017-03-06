@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.datasets import make_classification
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.analyst import Analyst
+from karura.core.kintone.application import Application
 from karura.default_analyst import make_analyst
 import karura.core.insights as I
 
@@ -50,16 +51,47 @@ class TestAnalyst(unittest.TestCase):
                     print(">{}".format(reply))
                     analyst.get_reply(reply)
                 else:
-                    print("xxxx")
                     reply = True
                     print(">{}".format(reply))
                     analyst.get_reply(reply)
             else:
                 print(d)
 
-        if analyst.get_model_insight():
-            m = analyst.get_model_insight()
-            print("Accuracy is {}".format(m.score))
+        m = analyst.interpret()
+        print(m)
+
+    def test_analyst_kintone(self):
+        app = Application()
+        dfe = app.load(333)
+        analyst = make_analyst(dfe)
+        while not analyst.has_done():
+            d = analyst.step()
+            if not d:
+                continue
+            if analyst.have_to_ask():
+                print(d)
+                if isinstance(analyst._insight, I.CategoricalItemInsight):
+                    reply = "direction"
+                    print(">{}".format(reply))
+                    analyst.get_reply(reply)
+                elif isinstance(analyst._insight, I.TargetConfirmInsight):
+                    reply = "house_price"
+                    print(">{}".format(reply))
+                    analyst.get_reply(reply)
+                elif isinstance(analyst._insight, I.ColumnIgnoranceInsight):
+                    reply = "name, person"
+                    print(">{}".format(reply))
+                    analyst.get_reply(reply)
+                else:
+                    reply = True
+                    print(">{}".format(reply))
+                    analyst.get_reply(reply)
+
+            else:
+                print(d)
+
+        m = analyst.interpret()
+        print(m)
 
     def test_model_describe(self):
         X, y = make_classification(n_samples=1000, n_features=10, n_informative=3, n_classes=3, random_state=0)

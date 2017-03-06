@@ -85,8 +85,16 @@ class ModelSelectionInsight(Insight):
                     {"C": [1, 10, 100], "kernel": ["linear"]}
                 ]
             )
+
+            random_forests = (
+                RandomForestRegressor(),
+                {
+                    "n_estimators": [5, 10, 20],
+                    "max_features": ["auto", "sqrt", "log2"]
+                }                
+            )
             model_and_params = [
-                elastic, svr
+                random_forests
             ]
             scoring = "r2"
         else:

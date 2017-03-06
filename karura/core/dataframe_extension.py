@@ -100,7 +100,7 @@ class DataFrameExtension():
         if len(features) > 0:
             return self.df[features]
         else:
-            raise Exception("features does not exist. please check df or ftypes.")
+            return None
 
     def get_target(self):
         if self.target:

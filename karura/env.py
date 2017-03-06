@@ -1,5 +1,6 @@
 import os
 import json
+from collections import namedtuple
 
 
 def get_slack_token():
@@ -8,6 +9,17 @@ def get_slack_token():
 
 def get_lang():
     return _get_env("LANG")
+
+
+kintoneEnv = namedtuple("kintoneEnv", ["domain", "login_id", "password"])
+
+
+def get_kintone_env():
+    domain = _get_env("KINTONE_DOMAIN")
+    login_id = _get_env("KINTONE_ID")
+    password = _get_env("KINTONE_PASSWORD")
+    env = kintoneEnv(domain, login_id, password)
+    return env
 
 
 def _get_env(key):

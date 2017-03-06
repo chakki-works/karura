@@ -38,10 +38,11 @@ class NumericalScalingInsight(Insight):
         return True
 
     def get_insight_targets(self, dfe):
-        return self._get_target_df(dfe).columns.tolist()
-
-    def _get_target_df(self, dfe):
-        return dfe.get_features(FType.numerical)
+        numericals = dfe.get_features(FType.numerical)
+        if numericals is not None:
+            return self._get_target_df(dfe).columns.tolist()
+        else:
+            return []
     
     @classmethod
     def _make_file_path(cls, path):

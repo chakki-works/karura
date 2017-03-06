@@ -9,8 +9,11 @@ from karura.core.analysis_stop_exception import AnalysisStopException
 
 class Analyst():
 
-    def __init__(self, df, insights):
-        self.dfe = DataFrameExtension(df)
+    def __init__(self, df_or_dfe, insights):
+        if isinstance(df_or_dfe, DataFrameExtension):
+            self.dfe = df_or_dfe
+        else:
+            self.dfe = DataFrameExtension(df_or_dfe)
         self.insights = insights
         self._check_list = OrderedDict()
         self._check_target = [
@@ -92,7 +95,8 @@ class Analyst():
                     if d:
                         self._need_confirmation = True
             else:
-                 d = i.describe()                
+                 d = i.describe()
+                 i.index.done = True
     
         except AnalysisStopException as ex:
             self._halt = True

@@ -31,6 +31,8 @@ class CategoricalItemInsight(Insight):
                     targets += trimed
                 else:
                     targets = [t for t in targets if t not in trimed]
+        elif isinstance(interpreted, str):
+            targets = interpreted.split(",")
 
         dfe.to_categorical(targets)
         return True
@@ -68,7 +70,7 @@ class CategoricalItemInsight(Insight):
 
         strip_split = lambda x: [e.strip() for e in x.split(",") if e.strip()]
         if len(pos) == 0:
-            return True
+            return text
         else:
             sign = True
             if pos[0] == p_minus:

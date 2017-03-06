@@ -6,6 +6,7 @@ from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import default_reply
 import pandas as pd
+from karura.core.kintone.application import Application
 from karura.default_analyst import make_analyst
 from karura.env import get_slack_token
 from karura.core.description import Description
@@ -79,18 +80,28 @@ def get_reply(message, reply):
 def refrection(message, reply):
     yes_ptn = r"はい|yes"
     no_ptn = r"いいえ|no"
-    replied = False
-    if re.match(yes_ptn, reply):
-        replied = get_reply(message, True)
-    elif re.match(no_ptn, reply):
-        replied = get_reply(message, False)
-    else:
-        replied = get_reply(message, reply)
 
-    if replied:
-        talk(message)
+    if Scope.Karura is None:
+        app = Application()
+        app_id = app.get_app_id(reply)
+        if app_id:
+            dfe = app.load(app_id)
+            Scope.Karura = make_analyst(dfe)
+            talk(message)
+
     else:
-        message.reply("Please upload the data file to me!")
+        replied = False
+        if re.match(yes_ptn, reply):
+            replied = get_reply(message, True)
+        elif re.match(no_ptn, reply):
+            replied = get_reply(message, False)
+        else:
+            replied = get_reply(message, reply)
+
+        if replied:
+            talk(message)
+        else:
+            message.reply("Can not understand your reply!")
 
 
 @default_reply

@@ -8,23 +8,25 @@ from karura.core.kintone.application import Application
 
 
 class TestkintoneApplication(unittest.TestCase):
+    APP_ID = 69  # it depends on environment
+    APP_NAME = "物件管理"
 
     def test_get_fields(self):
         app = Application()
-        f = app.get_fields(333)
+        f = app.get_fields(self.APP_ID)
         self.assertTrue(f)
         print(f)
 
     def test_get_data(self):
         app = Application()
-        dfe = app.load(333)
+        dfe = app.load(self.APP_ID)
         self.assertTrue(dfe)
         print(dfe.df.columns)
         print(dfe.ftypes)
     
     def test_get_app_id(self):
         app = Application()
-        app_id = app.get_app_id("物件管理")
+        app_id = app.get_app_id(self.APP_NAME)
         print(app_id)
 
 

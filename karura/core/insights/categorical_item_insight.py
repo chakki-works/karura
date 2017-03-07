@@ -70,7 +70,7 @@ class CategoricalItemInsight(Insight):
 
         strip_split = lambda x: [e.strip() for e in x.split(",") if e.strip()]
         if len(pos) == 0:
-            return text
+            return ",".join(strip_split(text))
         else:
             sign = True
             if pos[0] == p_minus:

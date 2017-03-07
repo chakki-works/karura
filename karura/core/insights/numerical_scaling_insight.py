@@ -40,7 +40,7 @@ class NumericalScalingInsight(Insight):
     def get_insight_targets(self, dfe):
         numericals = dfe.get_features(FType.numerical)
         if numericals is not None:
-            return self._get_target_df(dfe).columns.tolist()
+            return numericals.columns.tolist()
         else:
             return []
     

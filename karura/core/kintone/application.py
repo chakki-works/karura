@@ -74,13 +74,14 @@ class Application():
 
             data.append(row)
         
-        df = pd.DataFrame(np.array(data), columns=list(columns.keys()))
         fields = list(columns.values())
-        categoricals = [f.code for f in fields if f.get_feature_type() == FType.categorical]
-        numericals = [f.code for f in fields if f.get_feature_type() == FType.numerical]
-        datetimes = [f.code for f in fields if f.get_feature_type() == FType.datetime]
-        texts = [f.code for f in fields if f.get_feature_type() == FType.text]
-        uniques = [f.code for f in fields if f.get_feature_type() == FType.unique]
+        labels = [f.label for f in fields]
+        df = pd.DataFrame(np.array(data), columns=labels)
+        categoricals = [f.label for f in fields if f.get_feature_type() == FType.categorical]
+        numericals = [f.label for f in fields if f.get_feature_type() == FType.numerical]
+        datetimes = [f.label for f in fields if f.get_feature_type() == FType.datetime]
+        texts = [f.label for f in fields if f.get_feature_type() == FType.text]
+        uniques = [f.label for f in fields if f.get_feature_type() == FType.unique]
 
         dfe = DataFrameExtension(df, categoricals, numericals, datetimes, texts, uniques)
         return dfe
@@ -104,8 +105,6 @@ class Application():
             if "unique" in fs[f_code]:
                 is_unique = fs[f_code]["unique"]
 
-            if f_code.endswith("_prediction"):
-                continue  # heuristic now
             f = Field(f_code, f_type, f_label, is_unique)
             if f.get_feature_type() is not None:
                 d[f_code] = f

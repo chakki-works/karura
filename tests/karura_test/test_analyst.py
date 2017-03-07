@@ -15,6 +15,7 @@ import karura.core.insights as I
 
 class TestAnalyst(unittest.TestCase):
     FILE_NAME = os.path.join(os.path.dirname(__file__), "../data/titanic_train.csv")
+    APP_ID = 69  # it depends on environment
 
     def xtest_analyst(self):
         df = pd.read_csv(self.FILE_NAME)
@@ -62,7 +63,7 @@ class TestAnalyst(unittest.TestCase):
 
     def test_analyst_kintone(self):
         app = Application()
-        dfe = app.load(333)
+        dfe = app.load(self.APP_ID)
         analyst = make_analyst(dfe)
         while not analyst.has_done():
             d = analyst.step()
@@ -71,15 +72,15 @@ class TestAnalyst(unittest.TestCase):
             if analyst.have_to_ask():
                 print(d)
                 if isinstance(analyst._insight, I.CategoricalItemInsight):
-                    reply = "direction"
+                    reply = "向き"
                     print(">{}".format(reply))
                     analyst.get_reply(reply)
                 elif isinstance(analyst._insight, I.TargetConfirmInsight):
-                    reply = "house_price"
+                    reply = "家賃"
                     print(">{}".format(reply))
                     analyst.get_reply(reply)
                 elif isinstance(analyst._insight, I.ColumnIgnoranceInsight):
-                    reply = "name, person"
+                    reply = "物件名, 担当者"
                     print(">{}".format(reply))
                     analyst.get_reply(reply)
                 else:

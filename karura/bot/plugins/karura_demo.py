@@ -81,14 +81,15 @@ def refrection(message, reply):
     yes_ptn = r"はい|yes"
     no_ptn = r"いいえ|no"
 
-    if Scope.Karura is None:
+    if reply == "reset":
+        Scope.Karura = None
+    elif Scope.Karura is None:
         app = Application()
         app_id = app.get_app_id(reply)
         if app_id:
             dfe = app.load(app_id)
-            Scope.Karura = make_analyst(dfe)
+            Scope.Karura = make_analyst(dfe, kintone=True)
             talk(message)
-
     else:
         replied = False
         if re.match(yes_ptn, reply):

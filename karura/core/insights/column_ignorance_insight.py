@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from karura.core.insight import Insight
+from karura.core.dataframe_extension import FType
 
 
 class ColumnIgnoranceInsight(Insight):
@@ -24,6 +25,7 @@ class ColumnIgnoranceInsight(Insight):
 
             dfe.df.drop(columns, inplace=True, axis=1)
             dfe.sync()
+
         return True
     
     def interpret(self, reply):

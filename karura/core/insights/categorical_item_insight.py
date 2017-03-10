@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 from karura.core.insight import Insight
+from karura.core.dataframe_extension import FType
 
 
 class CategoricalItemInsight(Insight):
 
-    def __init__(self):
+    def __init__(self, threshold=0.5):
         super().__init__()
+        self.threshold = threshold
         self.index.as_column_check()
     
     def is_applicable(self, dfe):
@@ -38,23 +41,22 @@ class CategoricalItemInsight(Insight):
         return True
     
     def get_insight_targets(self, dfe):
-        df = dfe.df
         def is_categorical(s):
-            if s.dtype == float:
+            if s.dtype in [np.float32, np.float64]:
                 return False
-
-            c = s.count()
+            c = dfe.df.shape[0]
             freq = s.value_counts()
-
-            if len(freq) / c <= 0.5:
+            if len(freq) < c * self.threshold:
                 # records have to be accumulated by elements
                 return True
             
             return False
-
+        
+        targets = dfe.get_columns(FType.text, include_target=True)
+        targets += dfe.get_columns(FType.numerical, include_target=True)
         ts = []
-        for c in df.columns:
-            if is_categorical(df[c]):
+        for c in targets:
+            if is_categorical(dfe.df[c]):
                 ts.append(c)
         
         return ts

@@ -21,4 +21,4 @@ class CategoricalToDummyInsight(Insight):
         return True
 
     def get_insight_targets(self, dfe):
-        return dfe.get_features(FType.categorical).columns.tolist()
+        return dfe.get_columns(FType.categorical, include_target=False)

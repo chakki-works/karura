@@ -79,7 +79,7 @@ def get_reply(message, reply):
 @respond_to(r"(.+)")
 def refrection(message, reply):
     yes_ptn = r"はい|yes"
-    no_ptn = r"いいえ|no"
+    no_ptn = r"いいえ|ない|no|not"
 
     if reply == "reset":
         Scope.Karura = None
@@ -87,8 +87,8 @@ def refrection(message, reply):
         app = Application()
         app_id = app.get_app_id(reply)
         if app_id:
-            dfe = app.load(app_id)
-            Scope.Karura = make_analyst(dfe, kintone=True)
+            dfe = app.load(app_id, limit_over=True)
+            Scope.Karura = make_analyst(dfe)
             talk(message)
     else:
         replied = False

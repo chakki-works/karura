@@ -31,6 +31,12 @@ class DataFrameExtension():
         ):
             for c in columns:
                 self.ftypes[c] = dtype
+            if dtype == FType.categorical:
+                self.to_categorical(columns)
+            elif dtype == FType.numerical:
+                self.to_numerical(columns)
+            elif dtype == FType.datetime:
+                self.to_datetime(columns)
     
     def _ftype_inference(self):
         dtypes = self.df.dtypes
@@ -41,6 +47,7 @@ class DataFrameExtension():
                 self.ftypes[c] = FType.numerical
             elif sample.apply(lambda x: re.match(r"\d{2,4}?/\d{1,2}?/\d{1,2}?", str(x)) is not None).sum() > border[1]:
                 self.ftypes[c] = FType.datetime
+                self.to_datetime(c)
             else:
                 self.ftypes[c] = FType.text
     
@@ -101,6 +108,15 @@ class DataFrameExtension():
             return self.df[features]
         else:
             return None
+
+    def get_columns(self, ftype=None, include_target=True):
+        features = self.get_features(ftype)
+        columns = []
+        if features is not None:
+            columns = features.columns.tolist()
+        if include_target and (ftype is None or self.target and self.ftypes[self.target] == ftype):
+            columns += [self.target]
+        return columns
 
     def get_target(self):
         if self.target:

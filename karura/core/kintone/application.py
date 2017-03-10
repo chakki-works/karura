@@ -53,15 +53,24 @@ class Application():
             raise Exception("Error occurred when getting the app_id")
 
 
-    def load(self, app_id):
+    def load(self, app_id, limit_over=False):
         app = pykintone.login(self.env.domain, self.env.login_id, self.env.password).app(app_id)
         fields_d = self.get_fields(app_id)
 
-        selected = app.select(query="limit 500", fields=list(fields_d.keys()))  # todo: get over 500 records
+        records = []
+        limit = 500
+        selected = app.select(query="limit {}".format(limit), fields=list(fields_d.keys()))  # todo: get over 500 records
+        records = selected.records
+        if selected.total_count > limit and limit_over:
+            repeat = min(int(selected.total_count / limit), 5)
+            for i in range(repeat):
+                selected = app.select(query="limit {} offset {}".format(limit, (i + 1) * limit), fields=list(fields_d.keys()))
+                if len(selected.records) > 0:
+                    records += selected.records
 
         data = []
         columns = OrderedDict()
-        for r in selected.records:
+        for r in records:
             row = []
             if len(columns) == 0:
                 for f in r:

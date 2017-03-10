@@ -23,6 +23,12 @@ class FeatureSelectionInsight(ModelSelectionInsight):
         # http://scikit-learn.org/stable/modules/model_evaluation.html#common-cases-predefined-values
         scoring = "accuracy"
 
+        # todo: now, text and datetime colum is ignored
+        for t in (FType.text, FType.datetime):
+            columns = dfe.get_columns(t, include_target=False)
+            dfe.df.drop(columns, inplace=True, axis=1)
+            dfe.sync()
+
         if dfe.get_target_ftype() == FType.categorical:
             #models = [RandomForestClassifier(), SVC(kernel="linear")]
             models = [RandomForestClassifier()]

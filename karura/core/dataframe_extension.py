@@ -94,6 +94,11 @@ class DataFrameExtension():
             if c in self.ftypes:
                 new_ftype[c] = self.ftypes[c]
         self.ftypes = new_ftype
+    
+    def drop(self, name):
+        if name in self.df.columns:
+            self.df.drop(name, axis=1, inplace=True)
+            self.sync()
 
     def get_features(self, ftype=None):
         if ftype is None:

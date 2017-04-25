@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.insight import InsightIndex
-from karura.core.interpretation import ModelInterpretation
 from karura.core.analysis_stop_exception import AnalysisStopException
 
 
@@ -50,13 +49,12 @@ class Analyst():
         else:
             return ""
 
-    def interpret(self):
+    def result(self):
         m_insights = InsightIndex.query(self.insights, is_done=True, tag=InsightIndex.MODEL_SELECTION)
         if len(m_insights) == 0 or m_insights[0].model is None:
-            return ""
+            return None
         else:
-            mi = ModelInterpretation()
-            return mi.interpret(self.dfe, m_insights[0])
+            return m_insights[0].describe()
 
     def step(self):
         # fetch remained insights

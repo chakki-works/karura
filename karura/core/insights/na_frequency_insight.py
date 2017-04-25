@@ -20,6 +20,7 @@ class NAFrequencyCheckInsight(Insight):
             with pic.plot() as plt_fig:
                 na_rates.plot.bar()
             
+            its = self.a2t(its)
             self.description = {
                 "ja": Description("{} は欠損値が多い項目になっています。除外してもよいですか？".format(its), pic),
                 "en": Description("{} includes much n/a values. Could I exclude these?".format(its), pic)
@@ -34,6 +35,12 @@ class NAFrequencyCheckInsight(Insight):
         self.init_description()
         columns = self.get_insight_targets(dfe)
         dfe.df.drop(columns, inplace=True, axis=1)
+
+        cs = self.a2t(columns)
+        self.description = {
+            "ja": "{} は欠損値が多い項目のため、除外されました".format(cs),
+            "en": "{} are excluded because these have too much missing value".format(cs)
+        }
         dfe.sync()
 
     def get_insight_targets(self, dfe):

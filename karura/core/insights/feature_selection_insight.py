@@ -66,8 +66,9 @@ class FeatureSelectionInsight(ModelSelectionInsight):
 
         selected = features.columns[selected_mask].tolist()
 
+        ss = self.a2t(selected)
         self.description = {
-                "ja": "項目{}は予測に有効な項目です。これらを利用し、モデルを構築します。".format(",".join(selected)),
-                "en": "Columns {} are useful to predict. I'll use these to make model.".format(",".join(selected))
+                "ja": "項目{}は予測に有効な項目です。これらを利用し、モデルを構築します。".format(ss),
+                "en": "Columns {} are useful to predict. I'll use these to make model.".format(ss)
             }
         return True

@@ -9,7 +9,7 @@ from sklearn.datasets import make_classification
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.analyst import Analyst
 from karura.core.kintone.application import Application
-from karura.default_analyst import make_analyst
+from karura.default_config import make_analyst
 import karura.core.insights as I
 
 

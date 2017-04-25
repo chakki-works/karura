@@ -24,10 +24,11 @@ class CategoryReductionInsight(Insight):
             freq = dfe.df[t].value_counts() / length < self.freq_threshold
             target = freq[freq].index
             dfe.df[t] = dfe.df[t].apply(lambda s: self.DUMMY_FLAG if s in target else s)
-
+        
+        ts = self.a2t(targets)
         self.description = {
-            "ja": "項目{}では分類の数が多すぎるため、出現頻度が{}を超えない低頻度のものはその他に置換しました".format(targets, self.freq_threshold),
-            "en": "Columns {} have many categories, so replaced the value to 'others' if its frequency under {}.".format(targets, self.freq_threshold)
+            "ja": "項目{}では分類の数が多すぎるため、出現頻度が{}を超えない低頻度のものはその他に置換しました".format(ts, self.freq_threshold),
+            "en": "Columns {} have many categories, so replaced the value to 'others' if its frequency under {}.".format(ts, self.freq_threshold)
         }
         return True
 

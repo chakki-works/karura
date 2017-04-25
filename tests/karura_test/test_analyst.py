@@ -9,7 +9,7 @@ from sklearn.datasets import make_classification
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.analyst import Analyst
 from karura.core.kintone.application import Application
-from karura.default_analyst import make_analyst
+from karura.default_config import make_analyst
 import karura.core.insights as I
 
 
@@ -56,9 +56,6 @@ class TestAnalyst(unittest.TestCase):
                     analyst.get_reply(reply)
             else:
                 print(d)
-        
-        m = analyst.interpret()
-        print(m)
 
     def test_model_describe(self):
         X, y = make_classification(n_samples=1000, n_features=10, n_informative=3, n_classes=3, random_state=0)
@@ -71,9 +68,6 @@ class TestAnalyst(unittest.TestCase):
         print(d)
         analyst.step()
         self.assertTrue(analyst.has_done())
-        d = analyst.interpret()
-        self.assertTrue(d)
-        print(d)
 
 
 if __name__ == "__main__":

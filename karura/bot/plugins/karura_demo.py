@@ -7,7 +7,7 @@ from slackbot.bot import listen_to
 from slackbot.bot import default_reply
 import pandas as pd
 from karura.core.kintone.application import Application
-from karura.default_analyst import make_analyst
+from karura.default_config import make_analyst
 from karura.env import get_slack_token
 from karura.core.description import Description
 
@@ -55,16 +55,13 @@ def talk(message):
                 talk(message)
 
     else:
-        m = karura.interpret()
+        m = karura.result()
         send(message, m)
 
 
 def send(message, description):
     print("say: {}".format(description))
-    if isinstance(description, str):
-        message.reply(description)
-    elif isinstance(description, Description):
-        description.send_reply(message)
+    description.send_reply(message)
 
 
 def get_reply(message, reply):

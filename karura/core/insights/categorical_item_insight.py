@@ -15,6 +15,7 @@ class CategoricalItemInsight(Insight):
         self.init_description()
         ts = self.get_insight_targets(dfe)
         if len(ts) > 0:
+            ts = self.a2t(ts)
             self.description = {
                 "ja": "{} は分類項目のようです。分類項目として処理してよいですか？".format(ts),
                 "en": "{} seems to be categorical column. ok?".format(ts)
@@ -38,6 +39,12 @@ class CategoricalItemInsight(Insight):
             targets = interpreted.split(",")
 
         dfe.to_categorical(targets)
+        ts = self.a2t(targets)
+        self.description = {
+            "ja": "{} は分類項目として処理しました".format(ts),
+            "en": "{} are treated as categorical columns".format(ts)
+        }
+
         return True
     
     def get_insight_targets(self, dfe):

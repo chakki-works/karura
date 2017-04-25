@@ -20,13 +20,20 @@ class Insight():
         self.description.clear()
 
     def describe(self):
+        d = None
         if self.lang in self.description:
-            return self.description[self.lang]
+            d = self.description[self.lang]
         elif len(self.description) > 0:
-            return list[self.description.values()][0]
+            d = list[self.description.values()][0]
+        
+        if isinstance(d, str) and len(d) > 0:
+            return Description(d)
         else:
-            return ""
+            return d
     
+    def a2t(self, array):
+        return ",".join(array)
+
     def is_applicable(self, dfe):
         self.init_description()
         its = self.get_insight_targets(dfe)

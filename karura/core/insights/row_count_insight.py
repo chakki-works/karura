@@ -36,4 +36,8 @@ class RowCountInsight(Insight):
 
     def adopt(self, dfe, interpreted=None):
         dfe.df.drop(dfe.df.index[self.max_count:], inplace=True)
+        self.description = {
+            "ja": "{}件のデータまでを分析対象として扱います".format(self.max_count),
+            "en": "{} records are used to analysis".format(self.max_count)
+        }
         return True

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pandas as pd
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
@@ -12,6 +13,7 @@ from sklearn.metrics import r2_score
 from karura.core.insight import Insight
 from karura.core.dataframe_extension import FType
 from karura.core.analysis_stop_exception import AnalysisStopException
+from karura.core.description import ImageFile, Description
 
 
 class ModelSelectionInsight(Insight):
@@ -107,7 +109,6 @@ class ModelSelectionInsight(Insight):
         best_gv = None
         score = 0
         for m, p in model_and_params:
-            print("model {}".format(m.__class__.__name__))
             gv = GridSearchCV(m, p, scoring=scoring, cv=self.cv_count)
             gv.fit(train_x, train_y)
 
@@ -127,6 +128,8 @@ class ModelSelectionInsight(Insight):
         else:
             self.score = r2_score(test_y, predictions)
         
+        self._set_description(dfe)
+
         return True
 
     @classmethod
@@ -138,3 +141,16 @@ class ModelSelectionInsight(Insight):
                 is_binary = True
 
         return is_binary
+
+    def _set_description(self, dfe):
+        importances = pd.Series(self.model.feature_importances_, index=dfe.get_features().columns).sort_values(ascending=False)
+        pic = ImageFile.create()
+        with pic.plot() as plt_fig:
+            importances.plot.bar()
+        
+        params = (self.score, self.model.__class__.__name__)
+        self.description = {
+            "ja": Description("モデルの精度は{:.3f}です(利用モデル:{})。各項目の貢献度は図のようになっています。".format(*params), pic),
+            "en": Description("The model accuracy is {:.3f}(model is {}). The contributions of each features are here.".format(*params), pic)
+        }
+

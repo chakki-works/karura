@@ -62,7 +62,7 @@ class Application():
         selected = app.select(query="limit {}".format(limit), fields=list(fields_d.keys()))  # todo: get over 500 records
         records = selected.records
         if selected.total_count > limit and limit_over:
-            repeat = min(int(selected.total_count / limit), 5)
+            repeat = min(int(selected.total_count / limit), 10)
             for i in range(repeat):
                 selected = app.select(query="limit {} offset {}".format(limit, (i + 1) * limit), fields=list(fields_d.keys()))
                 if len(selected.records) > 0:

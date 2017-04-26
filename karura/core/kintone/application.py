@@ -15,6 +15,20 @@ class Field():
         self.label = label
         self.is_unique = is_unique
     
+    @classmethod
+    def create(cls, f_code, f_dict):
+        f_type = f_dict["type"]
+        f_label = f_dict["label"]
+        is_unique = False
+        if "unique" in f_dict:
+            is_unique = f_dict["unique"]
+
+        f = Field(f_code, f_type, f_label, is_unique)
+        if f.get_feature_type() is not None:
+            return f
+        else:
+            return None        
+
     def get_feature_type(self):
         if self.f_type in ["CREATED_TIME", "CREATOR", "MODIFIER", "UPDATED_TIME", "RECORD_NUMBER", "作成日時", "作成者", "更新者", "更新日時", "レコード番号"]:
             return None # ignore
@@ -39,6 +53,8 @@ class Application():
 
     def __init__(self, env=None):
         self.env = env if env is not None else get_kintone_env()
+        self.max_count = 5000
+        self._kintone_limit = 500
     
     def get_app_id(self, app_name):
         kintone = pykintone.login(self.env.domain, self.env.login_id, self.env.password)
@@ -53,46 +69,55 @@ class Application():
             raise Exception("Error occurred when getting the app_id")
 
 
-    def load(self, app_id, limit_over=False):
+    def load(self, app_id, query="", fields=(), target=""):
         app = pykintone.login(self.env.domain, self.env.login_id, self.env.password).app(app_id)
         fields_d = self.get_fields(app_id)
+        if len(fields) > 0:
+            d = OrderedDict()
+            for f in fields:
+                if f in fields_d:
+                    d[f] = fields_d[f]
+            fields_d = d
+        
+        q = query + " " if query else ""
 
         records = []
-        limit = 500
-        selected = app.select(query="limit {}".format(limit), fields=list(fields_d.keys()))  # todo: get over 500 records
+        _fields = list(fields_d.keys())
+        selected = app.select(query=q + "limit {}".format(self._kintone_limit), fields=_fields)
         records = selected.records
-        if selected.total_count > limit and limit_over:
-            repeat = min(int(selected.total_count / limit), 10)
+        if selected.total_count > self._kintone_limit:
+            repeat = min(self.max_count, selected.total_count) / self._kintone_limit
             for i in range(repeat):
-                selected = app.select(query="limit {} offset {}".format(limit, (i + 1) * limit), fields=list(fields_d.keys()))
+                selected = app.select(query=q + "limit {} offset {}".format(limit, (i + 1) * limit), fields=_fields)
                 if len(selected.records) > 0:
                     records += selected.records
 
         data = []
-        columns = OrderedDict()
-        for r in records:
+        columns = []
+        for i, r in enumerate(records):
             row = []
-            if len(columns) == 0:
-                for f in r:
-                    if f in fields_d:
-                        columns[f] = fields_d[f]
+
+            if i == 0:
+                columns = [f for f in _fields if f in r]
 
             for f in columns:
                 v = r[f]["value"]
                 row.append(v)
-
-            data.append(row)
+            
+            if len(row) > 0:
+                data.append(row)
         
-        fields = list(columns.values())
-        labels = [f.label for f in fields]
-        df = pd.DataFrame(np.array(data), columns=labels)
-        categoricals = [f.label for f in fields if f.get_feature_type() == FType.categorical]
-        numericals = [f.label for f in fields if f.get_feature_type() == FType.numerical]
-        datetimes = [f.label for f in fields if f.get_feature_type() == FType.datetime]
-        texts = [f.label for f in fields if f.get_feature_type() == FType.text]
-        uniques = [f.label for f in fields if f.get_feature_type() == FType.unique]
+        fs = [fields_d[c] for c in columns]
+        df = pd.DataFrame(np.array(data), columns=[f.label for f in fs])
+        categoricals = [f.label for f in fs if f.get_feature_type() == FType.categorical]
+        numericals = [f.label for f in fs if f.get_feature_type() == FType.numerical]
+        datetimes = [f.label for f in fs if f.get_feature_type() == FType.datetime]
+        texts = [f.label for f in fs if f.get_feature_type() == FType.text]
+        uniques = [f.label for f in fs if f.get_feature_type() == FType.unique]
 
         dfe = DataFrameExtension(df, categoricals, numericals, datetimes, texts, uniques)
+        if target:
+            dfe.target = fields_d[target].label
         return dfe
 
     def get_fields(self, app_id):
@@ -108,14 +133,8 @@ class Application():
         d = OrderedDict()
 
         for f_code in fs:
-            f_type = fs[f_code]["type"]
-            f_label = fs[f_code]["label"]
-            is_unique = False
-            if "unique" in fs[f_code]:
-                is_unique = fs[f_code]["unique"]
-
-            f = Field(f_code, f_type, f_label, is_unique)
-            if f.get_feature_type() is not None:
+            f = Field.create(f_code, fs[f_code])
+            if f:
                 d[f_code] = f
         
         return d

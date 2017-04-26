@@ -3,45 +3,34 @@ from karura.core.auto_run import AutoRun
 import karura.core.insights as I
 
 
-def make_analyst(df):
-    t_insight = I.TargetConfirmInsight()
-    ig_insight = I.ColumnIgnoranceInsight()
-    na_insight = I.NAFrequencyCheckInsight()
-    c_insight = I.CategoricalItemInsight()
-    cr_insight = I.CategoryReductionInsight()
-    n_insight = I.NumericalScalingInsight()
-    c_d_insight = I.CategoricalToDummyInsight()
-    f_insight = I.FeatureSelectionInsight()
-    m_insight = I.ModelSelectionInsight()
-    ay = Analyst(df, [
-        t_insight,
-        ig_insight,
-        na_insight,
-        c_insight,
-        cr_insight,
-        n_insight,
-        c_d_insight,
-        f_insight,
-        m_insight
-        ])
+def make_analyst(df, feature_type_estimation=True):
+    insights = []
+    insights.append(I.TargetConfirmInsight())
+    insights.append(I.ColumnIgnoranceInsight())
+    insights.append(I.NAFrequencyCheckInsight())
+    if feature_type_estimation:
+        insights.append(I.CategoricalItemInsight())
+    insights.append(I.CategoryReductionInsight())
+    insights.append(I.NumericalScalingInsight())
+    insights.append(I.CategoricalToDummyInsight())
+    insights.append(I.FeatureSelectionInsight())
+    insights.append(I.ModelSelectionInsight())
+
+    ay = Analyst(df, insights)
     return ay
 
 
-def make_autorun(df):
-    na_insight = I.NAFrequencyCheckInsight()
-    cr_insight = I.CategoryReductionInsight()
-    n_insight = I.NumericalScalingInsight()
-    c_insight = I.CategoricalItemInsight()
-    c_d_insight = I.CategoricalToDummyInsight()
-    f_insight = I.FeatureSelectionInsight()
-    m_insight = I.ModelSelectionInsight()
-    ar = AutoRun(df, [
-        na_insight,
-        cr_insight,
-        n_insight,
-        c_insight,
-        c_d_insight,
-        f_insight,
-        m_insight
-        ])
+def make_autorun(df, feature_type_estimation=True):
+    insights = []
+    insights.append(I.NAFrequencyCheckInsight())
+    if feature_type_estimation:
+        insights.append(I.CategoricalItemInsight())
+    insights.append(I.CategoryReductionInsight())
+    insights.append(I.NumericalScalingInsight())
+    insights.append(I.CategoricalToDummyInsight())
+    insights.append(I.FeatureSelectionInsight())
+    insights.append(I.ModelSelectionInsight())
+
+    ar = AutoRun(df, insights)
     return ar
+

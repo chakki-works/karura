@@ -22,7 +22,7 @@ class ImageFile():
     @contextmanager
     def plot(self):
         plt.style.use("ggplot")
-        plt.rcParams["font.family"] = "Yu Mincho"
+        plt.rcParams["font.family"] = "Yu Mincho" if os.name == "nt" else "IPAexGothic"
         fig = plt.figure()
 
         yield plt, fig

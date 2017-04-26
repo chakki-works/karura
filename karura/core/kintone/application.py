@@ -86,9 +86,9 @@ class Application():
         selected = app.select(query=q + "limit {}".format(self._kintone_limit), fields=_fields)
         records = selected.records
         if selected.total_count > self._kintone_limit:
-            repeat = min(self.max_count, selected.total_count) / self._kintone_limit
-            for i in range(repeat):
-                selected = app.select(query=q + "limit {} offset {}".format(limit, (i + 1) * limit), fields=_fields)
+            repeat = np.floor(min(self.max_count, selected.total_count) / self._kintone_limit)
+            for i in range(int(repeat)):
+                selected = app.select(query=q + "limit {} offset {}".format(self._kintone_limit, (i + 1) * self._kintone_limit), fields=_fields)
                 if len(selected.records) > 0:
                     records += selected.records
 

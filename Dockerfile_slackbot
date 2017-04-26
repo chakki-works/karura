@@ -16,8 +16,7 @@ ADD ./requirements.txt /tmp/requirements.txt
 RUN pip install -qr /tmp/requirements.txt
 
 # Add our code
-RUN apt-get install -y fonts-ipafont fonts-ipaexfont
 ADD ./karura /opt/karura/
 WORKDIR /opt/karura/
 
-CMD python run_server.py
+CMD python /opt/karura/bot/run.py

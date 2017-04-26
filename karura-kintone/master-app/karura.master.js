@@ -8,7 +8,7 @@
     "use strict";
 
     var _karura = {
-        "KARURA_HOST": "https://3b4e5ac9.ngrok.io"
+        "KARURA_HOST": "https://karura-server.herokuapp.com"
     }
 
     _karura.show_notification = function(message, isError){
@@ -109,8 +109,12 @@
             kintone.proxy(Karura.KARURA_HOST + "/train", "POST", {}, payload).then(function(args){
                 var body = args[0];
                 var result = JSON.parse(body)
-                Karura.show_result(result, record);
-                Karura.show_notification("学習が完了しました！", false);
+                if("error" in result){
+                    console.log(result["error"]);
+                }else{
+                    Karura.show_result(result, record);
+                    Karura.show_notification("学習が完了しました！", false);
+                }
             });
         }else{
             Karura.show_notification("少なくとも一つの予測に使用するフィールド、予測するフィールが必要です", true);

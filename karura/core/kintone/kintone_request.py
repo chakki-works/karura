@@ -33,7 +33,7 @@ class kintoneRequest():
         # confirm view
         app = pykintone.login(self.env.domain, self.env.login_id, self.env.password).app(app_id)
         view = None
-
+        query = ""
         if view_name:
             views = app.administration().view().get().views
             for v in views:
@@ -44,9 +44,9 @@ class kintoneRequest():
             if view is None:
                 raise kintoneException("指定された名前のビュー{}は、アプリに作成されていません".format(view_name))
         
-        # make query
-        query = view.filter_cond if view.filter_cond else ""
-        query += " order by " + view.sort if view.sort else ""
+            # make query
+            query = view.filter_cond if view.filter_cond else ""
+            query += " order by " + view.sort if view.sort else ""
 
         # make field setting
         fields = features if view is None else [f for f in view.fields if f in features]

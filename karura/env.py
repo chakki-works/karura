@@ -34,6 +34,7 @@ def _get_env(key):
 
 def _get_key_info():
     key_file = os.path.join(os.path.dirname(__file__), "../keys.json")
+    keys = ()
     if os.path.isfile(key_file):
         with open(key_file, encoding="utf-8") as f:
             keys = json.load(f)

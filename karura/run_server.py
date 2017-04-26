@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "./"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 import tornado.ioloop
 from tornado.options import define, options, parse_command_line
 from karura.server.app import application

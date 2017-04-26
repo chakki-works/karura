@@ -40,7 +40,7 @@ class TrainingHandler(tornado.web.RequestHandler):
         try:
             body = tornado.escape.json_decode(self.request.body)
             krequest = kintoneRequest()
-            dfe = krequest.request_to_dfe(body)        
+            dfe = krequest.request_to_dfe(body)
             autorun = make_autorun(dfe, feature_type_estimation=False)
             descriptions = autorun.execute()
             model = autorun.result()
@@ -54,7 +54,7 @@ class TrainingHandler(tornado.web.RequestHandler):
                     message = {"error": 0, "message": d.desc}
                 messages.append(message)
             
-            image = "" if model is None else model.describe().picture.to_base64()
+            image = b"" if model is None else model.describe().picture.to_base64()
 
             result = {
                 "score": score,
@@ -63,10 +63,12 @@ class TrainingHandler(tornado.web.RequestHandler):
             }
         except kintoneException as kex:
             self.set_status(400)
-            result = ErrorMessage.create(str(ex))            
+            result = ErrorMessage.create(str(kex))            
         except Exception as ex:
+            import traceback
             self.set_status(500)
-            result = ErrorMessage.create(str(ex))
+            ex = traceback.format_exc()
+            result = ErrorMessage.create(ex)
 
         self.write(result)
 

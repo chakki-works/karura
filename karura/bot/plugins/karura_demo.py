@@ -55,7 +55,7 @@ def talk(message):
                 talk(message)
 
     else:
-        m = karura.result()
+        m = karura.result().describe()
         send(message, m)
 
 

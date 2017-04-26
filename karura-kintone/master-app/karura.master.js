@@ -8,7 +8,7 @@
     "use strict";
 
     var _karura = {
-        "KARURA_HOST": "https://karura-server.herokuapp.com"
+        "KARURA_HOST": "https://3b4e5ac9.ngrok.io"
     }
 
     _karura.show_notification = function(message, isError){
@@ -120,38 +120,48 @@
 
     _karura.show_result = function(result, record){
         var score = result["score"];
-        var order = ["データについて", "予測に使用する項目について", "モデルについて", "システムエラー"];
+        score = Math.round(score * 1000) / 1000;
         var messages = result["messages"];
         record.record.message_table.value = []
         record.record.accuracy.value = score;
 
-        for(var i = 0; i < order.length; i++){
-            var aspect = order[i];
-            if(!(aspect in messages)){
-                continue;
-            }
-            for(var m = 0; m < messages[aspect].length; m++){
-                var newRow = {
-                    value: {
-                        "aspect":{
-                            type: "SINGLE_LINE_TEXT",
-                            value: aspect
-                        },
-                        "evaluation":{
-                            type: "DROP_DOWN",
-                            value: messages[aspect][m].evaluation
-                        },
-                        "message":{
-                            type: "SINGLE_LINE_TEXT",
-                            value: messages[aspect][m].message
-                        }
+        for(var i = 0; i < messages.length; i++){
+            var m = messages[i];
+            var newRow = {
+                value: {
+                    "message_code":{
+                        type: "DROP_DOWN",
+                        value: m.error == 1 ? "エラー" : "作業記録"
+                    },
+                    "message":{
+                        type: "SINGLE_LINE_TEXT",
+                        value: m.message
                     }
                 }
-                record.record.message_table.value.push(newRow);
             }
+            record.record.message_table.value.push(newRow);
         }
+        record.record.image_cache.value = result.image;
         kintone.app.record.set(record);
+        Karura.show_image(result.image);
+    }
 
+    _karura.show_image = function(imageStr){
+        var canvas = document.createElement("canvas");
+        canvas.width = 1000;
+        canvas.height = 700;
+
+        var ctx = canvas.getContext("2d");
+        var image = new Image();
+        image.onload = function() {
+            ctx.drawImage(image, 0, 0);
+        }
+        image.src = "data:image/png;base64," + imageStr;
+        var resultArea = kintone.app.record.getSpaceElement("result");
+        while (resultArea.firstChild) {
+            resultArea.removeChild(resultArea.firstChild);
+        }
+        resultArea.appendChild(canvas);
     }
 
     kintone.events.on(["app.record.edit.show", "app.record.create.show"], function(event){
@@ -187,6 +197,19 @@
         }
         kintone.app.record.getSpaceElement("train_button").appendChild(begin_train);
 
+        //show image
+        var imageCache = event.record.image_cache.value;
+        if(imageCache){
+            Karura.show_image(imageCache)
+        }
+
+    });
+
+    kintone.events.on(["app.record.detail.show"], function(event){
+        var imageCache = event.record.image_cache.value;
+        if(imageCache){
+            Karura.show_image(imageCache)
+        }
     });
 
     return _karura

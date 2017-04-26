@@ -23,6 +23,13 @@ class AutoRun():
             InsightIndex.MODEL_SELECTION
         ]
 
+    def result(self):
+        m_insights = InsightIndex.query(self.insights, tag=InsightIndex.MODEL_SELECTION)
+        if len(m_insights) == 0 or m_insights[0].model is None:
+            return None
+        else:
+            return m_insights[0]
+
     def execute(self):
         descriptions = []
         for tag in self._tag_order:

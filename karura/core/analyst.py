@@ -54,7 +54,7 @@ class Analyst():
         if len(m_insights) == 0 or m_insights[0].model is None:
             return None
         else:
-            return m_insights[0].describe()
+            return m_insights[0]
 
     def step(self):
         # fetch remained insights

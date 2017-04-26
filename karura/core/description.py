@@ -1,5 +1,6 @@
 import os
 import tempfile
+import base64
 from contextlib import contextmanager
 import matplotlib
 matplotlib.use("Agg")
@@ -28,6 +29,12 @@ class ImageFile():
 
         plt.tight_layout()
         fig.savefig(self.path)
+    
+    def to_base64(self):
+        b64 = ""
+        with open(self.path, "rb") as im:
+            b64 = base64.b64encode(im.read())
+        return b64
 
     def delete(self):
         os.close(self.fd)

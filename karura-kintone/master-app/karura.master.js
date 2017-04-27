@@ -108,8 +108,14 @@
             Karura.show_notification("学習を開始しました．．．");
             kintone.proxy(Karura.KARURA_HOST + "/train", "POST", {}, payload).then(function(args){
                 var body = args[0];
-                var result = JSON.parse(body)
+                var result = {};
+                try {
+                    result = JSON.parse(body)
+                } catch (e) {
+                    Karura.show_notification("学習中に時間がかかりすぎてしまいました。対象データ、また予測に使う項目を減らしてみてください。", true);
+                }
                 if("error" in result){
+                    Karura.show_notification("学習中にエラーが発生しました。詳細は、コンソールを参照してください。", true);
                     console.log(result["error"]);
                 }else{
                     Karura.show_result(result, record);

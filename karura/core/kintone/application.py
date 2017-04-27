@@ -30,24 +30,30 @@ class Field():
             return None        
 
     def get_feature_type(self):
+        ftype = None
         if self.f_type in ["CREATED_TIME", "CREATOR", "MODIFIER", "UPDATED_TIME", "RECORD_NUMBER", "作成日時", "作成者", "更新者", "更新日時", "レコード番号"]:
-            return None # ignore
+            pass
         elif self.f_type in ["FILE", "LINK", "RICH_TEXT", "STATUS_ASSIGNEE", "SUBTABLE"]:
-            return None # ignore            
+            pass
         elif self.is_unique:
-            return FType.unique
+            ftype = FType.unique
         elif self.f_type in ["RADIO_BUTTON", "DROP_DOWN", "CHECK_BOX", "MULTI_SELECT", "CATEGORY", "STATUS", "カテゴリー", "ステータス", "USER_SELECT"]:
             # todo: think about multiselect
-            return FType.categorical
+            ftype = FType.categorical
         elif self.f_type in ["DATE", "DATETIME"]:
-            return FType.datetime
+            ftype = FType.datetime
         elif self.f_type in ["NUMBER", "CALC"]:
-            return FType.numerical
+            ftype = FType.numerical
         elif self.f_type in ["MULTI_LINE_TEXT", "SINGLE_LINE_TEXT"]:
-            return FType.text
-        else:
-            return None
+            # optional inferring
+            if self.code.endswith("_type") or self.code.endswith("_category"):
+                ftype = FType.categorical
+            elif not self.is_unique and (self.code.endswith("_id") or self.code.endswith("_cd")):
+                ftype = FType.categorical
+            else:
+                ftype = FType.text
 
+        return ftype
 
 class Application():
 

@@ -4,6 +4,7 @@ import tornado.web
 import tornado.escape
 from karura.core.kintone.kintone_exception import kintoneException
 from karura.core.kintone.kintone_request import kintoneRequest
+from karura.core.dataframe_extension import FType
 from karura.default_config import make_autorun
 
 

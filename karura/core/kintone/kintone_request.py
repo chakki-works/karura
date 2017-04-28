@@ -42,7 +42,7 @@ class kintoneRequest():
                     break
 
             if view is None:
-                raise kintoneException("指定された名前のビュー{}は、アプリに作成されていません".format(view_name))
+                raise kintoneException("指定された名前のビュー「{}」は、アプリに作成されていません".format(view_name))
         
             # make query
             query = view.filter_cond if view.filter_cond else ""

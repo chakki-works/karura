@@ -1,0 +1,26 @@
+{
+  "name": "Karura",
+  "description": "Easy machine learning platform on the kintone",
+  "repository": "https://github.com/chakki-works/karura",
+  "keywords": ["Python", "tornado", "scikit-learn"],
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "KINTONE_DOMAIN": {
+      "description": "kintone domain"
+    },
+    "KINTONE_ID": {
+      "description": "kintone login id for karura."
+    },
+    "KINTONE_PASSWORD": {
+      "description": "kintone login password for karura."
+    },
+    "LANG": {
+      "description": "language that is used in karura.",
+      "value": "ja"        
+    }
+  },
+  "image": "registry.heroku.com/karura-server/web"
+}

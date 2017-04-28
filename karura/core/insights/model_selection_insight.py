@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -8,6 +9,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import learning_curve
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import r2_score
 from karura.core.insight import Insight
@@ -26,6 +28,7 @@ class ModelSelectionInsight(Insight):
         self.model = None
         self.score = 0
         self.automatic = True
+        self.n_jobs = 4
     
     def is_applicable(self, dfe):
         self.description = {}
@@ -109,7 +112,7 @@ class ModelSelectionInsight(Insight):
         best_gv = None
         score = 0
         for m, p in model_and_params:
-            gv = GridSearchCV(m, p, scoring=scoring, cv=self.cv_count)
+            gv = GridSearchCV(m, p, scoring=scoring, cv=self.cv_count, n_jobs=self.n_jobs)
             gv.fit(train_x, train_y)
 
             if score < gv.best_score_:
@@ -144,9 +147,33 @@ class ModelSelectionInsight(Insight):
 
     def _set_description(self, dfe):
         importances = pd.Series(self.model.feature_importances_, index=dfe.get_features().columns).sort_values(ascending=False)
+
+        y = dfe.df[dfe.target]
+        X = dfe.df.drop(dfe.target, axis=1)
+        train_sizes, train_scores, test_scores = learning_curve(self.model, X, y, n_jobs=self.n_jobs)
+        train_scores_mean = np.mean(train_scores, axis=1)
+        train_scores_std = np.std(train_scores, axis=1)
+        test_scores_mean = np.mean(test_scores, axis=1)
+        test_scores_std = np.std(test_scores, axis=1)
+            
         pic = ImageFile.create()
         with pic.plot() as plt_fig:
-            importances.plot.bar()
+            plt, fig = plt_fig
+            fig.set_figwidth(12)
+            plt.subplot(121)
+            importances.plot(kind="bar")
+
+            ax2 = plt.subplot(122)
+            ax2.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                train_scores_mean + train_scores_std, alpha=0.1,color="r")
+            ax2.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                test_scores_mean + test_scores_std, alpha=0.1, color="g")
+            ax2.plot(train_sizes, train_scores_mean, "o-", color="r", label="学習精度" if self.lang == "ja" else "Training score")
+            ax2.plot(train_sizes, test_scores_mean, 'o-', color="g", label="評価精度" if self.lang == "ja" else "Cross-validation score")
+            ax2.set_xlabel("学習データ量(行数)" if self.lang == "ja" else "data records")
+            ax2.set_ylabel("精度" if self.lang == "ja" else "accuracy")
+            ax2.set_ylim(0, 1)
+            ax2.legend(loc="best")
         
         params = (self.score, self.model.__class__.__name__)
         self.description = {

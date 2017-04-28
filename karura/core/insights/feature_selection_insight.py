@@ -14,7 +14,6 @@ class FeatureSelectionInsight(ModelSelectionInsight):
 
     def __init__(self):
         super().__init__()
-        self.cv_count = 3
         self.index.as_feature_selection()
     
     def adopt(self, dfe, interpreted=None):
@@ -49,7 +48,7 @@ class FeatureSelectionInsight(ModelSelectionInsight):
         best_rfecv = None
         feature_masks = []
         for m in models:
-            rfecv = RFECV(estimator=m, step=1, cv=self.cv_count, scoring=scoring)
+            rfecv = RFECV(estimator=m, step=1, cv=self.cv_count, scoring=scoring, n_jobs=self.n_jobs)
             rfecv.fit(features, target)
             
             feature_masks.append(rfecv.support_)

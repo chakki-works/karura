@@ -21,6 +21,9 @@ class TestAutoRun(unittest.TestCase):
         descriptions = autorun.execute()
         for d in descriptions:
             print(d)
+        
+        result = autorun.result()
+        print(result.describe().picture.path)
 
 
 if __name__ == "__main__":

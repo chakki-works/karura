@@ -3,12 +3,20 @@ import json
 from collections import namedtuple
 
 
+class EnvironmentalSettingException(Exception):
+
+    def __init__(self, message):
+        super(EnvironmentalSettingException, self).__init__(message)
+
+
 def get_slack_token():
     return _get_env("SLACK_TOKEN")
 
 
 def get_lang():
-    return _get_env("LANG")
+    lang = _get_env("LANG")
+    lang = lang if lang else "ja"
+    return lang
 
 
 kintoneEnv = namedtuple("kintoneEnv", ["domain", "login_id", "password"])
@@ -19,6 +27,10 @@ def get_kintone_env():
     login_id = _get_env("KINTONE_ID")
     password = _get_env("KINTONE_PASSWORD")
     env = kintoneEnv(domain, login_id, password)
+
+    if env.domain == "" or env.login_id == "" or env.password == "":
+        raise EnvironmentalSettingException("Can not get the information to Access the kintone")
+
     return env
 
 

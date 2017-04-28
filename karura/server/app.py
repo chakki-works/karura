@@ -2,6 +2,7 @@
 import os
 import tornado.web
 import tornado.escape
+from karura.env import EnvironmentalSettingException
 from karura.core.kintone.kintone_exception import kintoneException
 from karura.core.kintone.kintone_request import kintoneRequest
 from karura.core.dataframe_extension import FType
@@ -62,6 +63,9 @@ class TrainingHandler(tornado.web.RequestHandler):
                 "messages": messages,
                 "image": image.decode("utf-8")
             }
+        except EnvironmentalSettingException as eex:
+            self.set_status(400)
+            result = ErrorMessage.create("kintone/Slackにアクセスするための環境変数が設定されていません")
         except kintoneException as kex:
             self.set_status(400)
             result = ErrorMessage.create(str(kex))            

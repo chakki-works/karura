@@ -158,7 +158,7 @@
 
     _karura.show_image = function(imageStr){
         var canvas = document.createElement("canvas");
-        canvas.width = 1000;
+        canvas.width = 1600;
         canvas.height = 700;
 
         var ctx = canvas.getContext("2d");

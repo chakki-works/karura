@@ -24,7 +24,7 @@ class Insight():
         if self.lang in self.description:
             d = self.description[self.lang]
         elif len(self.description) > 0:
-            d = list[self.description.values()][0]
+            d = list(self.description.values())[0]
         
         if isinstance(d, str) and len(d) > 0:
             return Description(d)

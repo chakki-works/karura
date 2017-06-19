@@ -14,7 +14,7 @@ def get_slack_token():
 
 
 def get_lang():
-    lang = _get_env("LANG")
+    lang = _get_env("KARURA_LANG")
     lang = lang if lang else "ja"
     return lang
 

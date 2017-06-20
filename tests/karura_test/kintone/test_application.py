@@ -8,7 +8,7 @@ from karura.core.kintone.application import Application
 
 
 class TestkintoneApplication(unittest.TestCase):
-    APP_ID = 69  # it depends on environment
+    APP_ID = 333  # it depends on environment
     APP_NAME = "物件管理"
 
     def test_get_fields(self):

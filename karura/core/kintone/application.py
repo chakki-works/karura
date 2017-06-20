@@ -50,10 +50,17 @@ class Field():
                 ftype = FType.categorical
             elif not self.is_unique and (self.code.endswith("_id") or self.code.endswith("_cd")):
                 ftype = FType.categorical
+            elif self.code.endswith("_value"):
+                ftype = FType.numerical
             else:
                 ftype = FType.text
 
         return ftype
+    
+    def __repr__(self):
+        repr = "<{}:{}->{} {}>".format(self.__class__, self.f_type, self.get_feature_type(), self.label)
+        return repr
+
 
 class Application():
 
@@ -140,6 +147,7 @@ class Application():
 
         for f_code in fs:
             f = Field.create(f_code, fs[f_code])
+            print(f)
             if f:
                 d[f_code] = f
         

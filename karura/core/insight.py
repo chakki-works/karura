@@ -53,6 +53,9 @@ class Insight():
             return True
         else:
             return False
+    
+    def get_transformer(self, dfe):
+        return None
 
 
 class InsightIndex():

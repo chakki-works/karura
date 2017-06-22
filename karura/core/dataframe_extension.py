@@ -57,14 +57,6 @@ class DataFrameExtension():
         else:
             return None
 
-    def load_column_definition(self, path):
-        # todo: implements
-        pass
-
-    def save_column_definition(self, path):
-        # todo: implements
-        pass
-
     def to_categorical(self, column_or_columns):
         def convert(c):
             self.df[c] = self.df[c].astype("category")
@@ -128,7 +120,7 @@ class DataFrameExtension():
             return self.df[self.target]
         else:
             raise Exception("target column is not defined.")
-
+    
     @classmethod
     def read_csv(cls, path, **kwargs):
         df = pd.read_csv(path, **kwargs)

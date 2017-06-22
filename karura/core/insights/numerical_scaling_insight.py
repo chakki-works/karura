@@ -4,24 +4,20 @@ from karura.core.insight import Insight
 from karura.core.dataframe_extension import FType
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.externals import joblib
 
 
 class NumericalScalingInsight(Insight):
 
-    def __init__(self, load_path="", standard_than_minmax=True):
+    def __init__(self, minmax_scale=False):
         super().__init__()
 
-        if load_path and os.path.isfile(self._make_file_path(load_path)):
-            self.path = load_path
-            self.scaler = joblib.load(self._make_file_path(self.path))
-            self._freeze = True
-        else:
-            self.scaler = StandardScaler() if standard_than_minmax else MinMaxScaler()
-            self._freeze = False
-
+        self.minmax_scale  = minmax_scale
+        self.scaler = StandardScaler() if not minmax_scale else MinMaxScaler()
         self.index.as_preprocessing()
         self.automatic = True
+        self._scaled_columns = []
     
     def save(self, path):
         self.path = path
@@ -29,12 +25,9 @@ class NumericalScalingInsight(Insight):
 
     def adopt(self, dfe, interpreted=None):
         targets = self.get_insight_targets(dfe)
-        dfe.df.dropna(inplace=True)
-        if not self._freeze:
-            dfe.df[targets] = self.scaler.fit_transform(dfe.df[targets])
-        else:
-            dfe.df[targets] = self.scaler.transform(dfe.df[targets])
-        
+        self._scaled_columns = targets
+        dfe.df.dropna(subset=targets, inplace=True)
+        dfe.df[targets] = self.scaler.fit_transform(dfe.df[targets])
         return True
 
     def get_insight_targets(self, dfe):
@@ -50,3 +43,25 @@ class NumericalScalingInsight(Insight):
         f_path = os.path.join(path, f_name)
         return f_path
 
+    def get_transformer(self, dfe):
+        transformer = NumericalScalingTransformer(dfe, self)
+        transformer.fit(dfe.df)
+        return transformer
+
+
+class NumericalScalingTransformer(BaseEstimator, TransformerMixin):
+
+    def __init__(self, dfe, numerical_scaling_insight):
+        columns = dfe.df.columns.tolist()
+        self.columns = [c for c in columns if c in numerical_scaling_insight._scaled_columns]
+        self.scaler = StandardScaler() if not numerical_scaling_insight.minmax_scale else MinMaxScaler()
+
+    def fit(self, X, y=None):
+        _X = X.dropna(subset=self.columns)
+        _ = self.scaler.fit_transform(_X[self.columns])
+        return self  # do nothing
+
+    def transform(self, X, y=None, copy=None):
+        X[self.columns] = X[self.columns].fillna(0)
+        X[self.columns] = self.scaler.transform(X[self.columns])
+        return X

@@ -20,6 +20,7 @@ class Analyst():
             InsightIndex.ROW_CHECK_TAG,
             InsightIndex.PREPROCESSING,
             InsightIndex.FEATURE_AUGMENTATION,
+            InsightIndex.LABEL_FORMAT,
             InsightIndex.FEATURE_SELECTION,
             InsightIndex.MODEL_SELECTION
         ]

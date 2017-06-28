@@ -4,6 +4,7 @@ from .datetime_to_categorical_insight import DatetimeToCategoricalInsight
 from .category_reduction_insight import CategoryReductionInsight
 from .numerical_scaling_insight import NumericalScalingInsight
 from .categorical_to_dummy_insight import CategoricalToDummyInsight
+from .label_format_insight import LabelFormatInsight
 from .feature_selection_insight import FeatureSelectionInsight
 from .model_selection_insight import ModelSelectionInsight
 from .target_confirmation_insight import TargetConfirmInsight

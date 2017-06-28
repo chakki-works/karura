@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
-from sklearn.linear_model import ElasticNet
+from sklearn.linear_model import Lasso
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import RFECV
 import numpy as np
@@ -38,7 +38,9 @@ class FeatureSelectionInsight(ModelSelectionInsight):
                 # http://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score
                 scoring = "f1_micro"  # if prediction does not occur to some label, macro is too worse to evaluate
         elif dfe.get_target_ftype() == FType.numerical:
-            models = [ElasticNet(), RandomForestRegressor()]
+            # About the model to select the feature, please refer
+            # http://scikit-learn.org/stable/modules/feature_selection.html
+            models = [Lasso(alpha=.1), RandomForestRegressor()]
             scoring = "r2"
         else:
             raise Exception("Target type is None or un-predictable type.")
@@ -50,14 +52,13 @@ class FeatureSelectionInsight(ModelSelectionInsight):
         for m in models:
             rfecv = RFECV(estimator=m, step=1, cv=self.cv_count, scoring=scoring, n_jobs=self.n_jobs)
             rfecv.fit(features, target)
-            
             feature_masks.append(rfecv.support_)
         
         selected_mask = []
         if len(feature_masks) < 2:
             selected_mask = feature_masks[0]
         else:
-            selected_mask = np.logical_or(*feature_masks)  # take the feature that some models take
+            selected_mask = np.logical_and(*feature_masks)  # take the feature that some models take
 
         eliminates = features.columns[np.logical_not(selected_mask)]
         dfe.df.drop(eliminates, inplace=True, axis=1)

@@ -10,10 +10,11 @@ def make_analyst(df, feature_type_estimation=True):
     insights.append(I.NAFrequencyCheckInsight())
     if feature_type_estimation:
         insights.append(I.CategoricalItemInsight())
+    insights.append(I.DatetimeToCategoricalInsight())
     insights.append(I.CategoryReductionInsight())
     insights.append(I.NumericalScalingInsight())
-    insights.append(I.DatetimeToCategoricalInsight())
     insights.append(I.CategoricalToDummyInsight())
+    insights.append(I.LabelFormatInsight())
     insights.append(I.FeatureSelectionInsight())
     insights.append(I.ModelSelectionInsight())
 
@@ -26,10 +27,11 @@ def make_autorun(df, feature_type_estimation=True):
     insights.append(I.NAFrequencyCheckInsight())
     if feature_type_estimation:
         insights.append(I.CategoricalItemInsight())
+    insights.append(I.DatetimeToCategoricalInsight())
     insights.append(I.CategoryReductionInsight())
     insights.append(I.NumericalScalingInsight())
-    insights.append(I.DatetimeToCategoricalInsight())
     insights.append(I.CategoricalToDummyInsight())
+    insights.append(I.LabelFormatInsight())
     insights.append(I.FeatureSelectionInsight())
     insights.append(I.ModelSelectionInsight())
 

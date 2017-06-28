@@ -63,6 +63,7 @@ class InsightIndex():
     ROW_CHECK_TAG = "row_check"
     PREPROCESSING = "preprocessing"
     FEATURE_AUGMENTATION = "feature_augmentation"
+    LABEL_FORMAT = "label_format"
     FEATURE_SELECTION = "feature_selection"
     MODEL_SELECTION = "model_selection"
 
@@ -81,6 +82,9 @@ class InsightIndex():
     
     def as_feature_augmentation(self):
         self.set_tag(self.FEATURE_AUGMENTATION)
+
+    def as_label_format(self):
+        self.set_tag(self.LABEL_FORMAT)
 
     def as_feature_selection(self):
         self.set_tag(self.FEATURE_SELECTION)

@@ -10,7 +10,7 @@ class DatetimeToCategoricalInsight(Insight):
 
     def __init__(self):
         super().__init__()
-        self.index.as_feature_augmentation()
+        self.index.as_preprocessing()
         self.automatic = True
         self._categorized = []
 

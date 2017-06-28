@@ -66,7 +66,7 @@ class Application():
 
     def __init__(self, env=None):
         self.env = env if env is not None else get_kintone_env()
-        self.max_count = 5000
+        self.max_count = 10000
         self._kintone_limit = 500
     
     def get_app_id(self, app_name):
@@ -147,7 +147,6 @@ class Application():
 
         for f_code in fs:
             f = Field.create(f_code, fs[f_code])
-            print(f)
             if f:
                 d[f_code] = f
         

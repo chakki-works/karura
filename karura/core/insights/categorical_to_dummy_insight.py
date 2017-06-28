@@ -41,7 +41,7 @@ class CategoricalToDummyInsight(Insight):
 class CategoricalToDummyTransformer(BaseEstimator, TransformerMixin):
 
     def __init__(self, dfe, categorical_to_dummy_insight):
-        self.columns = dfe.df.columns.tolist()
+        self.model_features = dfe.df.columns.tolist()
         self.categorical_to_dummy = categorical_to_dummy_insight._categorical_to_dummy
 
     def fit(self, X, y=None):
@@ -51,7 +51,7 @@ class CategoricalToDummyTransformer(BaseEstimator, TransformerMixin):
         for c in self.categorical_to_dummy:
             categoricals = X[c]
             dummies = self.categorical_to_dummy[c]
-            useful_dummies = [d for d in dummies if d in self.columns]
+            useful_dummies = [d for d in dummies if d in self.model_features]
 
             for ud in useful_dummies:
                 name, value = ud.rsplit("_")

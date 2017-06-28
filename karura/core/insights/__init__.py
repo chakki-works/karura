@@ -1,5 +1,6 @@
 from .categorical_item_insight import CategoricalItemInsight
 from .row_count_insight import RowCountInsight
+from .datetime_to_categorical_insight import DatetimeToCategoricalInsight
 from .category_reduction_insight import CategoryReductionInsight
 from .numerical_scaling_insight import NumericalScalingInsight
 from .categorical_to_dummy_insight import CategoricalToDummyInsight

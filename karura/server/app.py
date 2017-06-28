@@ -103,6 +103,7 @@ class PredictionHandler(tornado.web.RequestHandler):
                 }
             }
         except Exception as ex:
+            print(ex)
             result = ErrorMessage.create(str(ex))
         self.write(result)
 

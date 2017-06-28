@@ -28,7 +28,7 @@ class ModelSelectionInsight(Insight):
         self.model = None
         self.score = 0
         self.automatic = True
-        self.n_jobs = 4
+        self.n_jobs = -1
     
     def is_applicable(self, dfe):
         self.description = {}
@@ -63,8 +63,7 @@ class ModelSelectionInsight(Insight):
             random_forests = (
                 RandomForestClassifier(),
                 {
-                    "n_estimators": [5, 10, 20],
-                    "max_features": ["auto", "sqrt", "log2"]
+                    "n_estimators": [5, 10, 20]
                 }
             )
 
@@ -94,8 +93,7 @@ class ModelSelectionInsight(Insight):
             random_forests = (
                 RandomForestRegressor(),
                 {
-                    "n_estimators": [5, 10, 20],
-                    "max_features": ["auto", "sqrt", "log2"]
+                    "n_estimators": [5, 10, 20]
                 }                
             )
             model_and_params = [
@@ -110,7 +108,7 @@ class ModelSelectionInsight(Insight):
         train_y = train[dfe.target]
         train_x = train.drop(dfe.target, axis=1)
         best_gv = None
-        score = 0
+        score = -1
         for m, p in model_and_params:
             gv = GridSearchCV(m, p, scoring=scoring, cv=self.cv_count, n_jobs=self.n_jobs)
             gv.fit(train_x, train_y)

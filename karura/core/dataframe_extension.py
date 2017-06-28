@@ -45,6 +45,8 @@ class DataFrameExtension():
             sample = self.df[c].head(border[0])
             if dtypes[c] in (np.int32, np.int64, np.float32, np.float64):
                 self.ftypes[c] = FType.numerical
+            elif dtypes[c] == np.dtype("datetime64[ns]"):
+                self.ftypes[c] = FType.datetime
             elif sample.apply(lambda x: re.match(r"\d{2,4}?/\d{1,2}?/\d{1,2}?", str(x)) is not None).sum() > border[1]:
                 self.ftypes[c] = FType.datetime
                 self.to_datetime(c)

@@ -4,25 +4,13 @@ import pandas as pd
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.insight import InsightIndex
 from karura.core.analysis_stop_exception import AnalysisStopException
+from karura.core.predictor import PredictorConvertible
 
 
-class AutoRun():
+class AutoRun(PredictorConvertible):
 
     def __init__(self, df_or_dfe, insights):
-        if isinstance(df_or_dfe, DataFrameExtension):
-            self.dfe = df_or_dfe
-        else:
-            self.dfe = DataFrameExtension(df_or_dfe)
-        self.insights = insights
-        self._tag_order = [
-            InsightIndex.COLUMN_CHECK_TAG,
-            InsightIndex.ROW_CHECK_TAG,
-            InsightIndex.PREPROCESSING,
-            InsightIndex.FEATURE_AUGMENTATION,
-            InsightIndex.LABEL_FORMAT,
-            InsightIndex.FEATURE_SELECTION,
-            InsightIndex.MODEL_SELECTION
-        ]
+        super().__init__(df_or_dfe, insights)
 
     def result(self):
         m_insights = InsightIndex.query(self.insights, tag=InsightIndex.MODEL_SELECTION)

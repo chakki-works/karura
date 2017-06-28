@@ -4,26 +4,14 @@ import pandas as pd
 from karura.core.dataframe_extension import DataFrameExtension
 from karura.core.insight import InsightIndex
 from karura.core.analysis_stop_exception import AnalysisStopException
+from karura.core.predictor import PredictorConvertible
 
 
-class Analyst():
+class Analyst(PredictorConvertible):
 
     def __init__(self, df_or_dfe, insights):
-        if isinstance(df_or_dfe, DataFrameExtension):
-            self.dfe = df_or_dfe
-        else:
-            self.dfe = DataFrameExtension(df_or_dfe)
-        self.insights = insights
+        super().__init__(df_or_dfe, insights)
         self._check_list = OrderedDict()
-        self._check_target = [
-            InsightIndex.COLUMN_CHECK_TAG,
-            InsightIndex.ROW_CHECK_TAG,
-            InsightIndex.PREPROCESSING,
-            InsightIndex.FEATURE_AUGMENTATION,
-            InsightIndex.LABEL_FORMAT,
-            InsightIndex.FEATURE_SELECTION,
-            InsightIndex.MODEL_SELECTION
-        ]
         self._halt = False
         self._insight = None
         self._need_confirmation = False
@@ -31,7 +19,7 @@ class Analyst():
     
     def init(self):
         self._halt = False
-        for c in self._check_target:
+        for c in self._tag_order:
             self._check_list[c] = False
     
     def has_done(self):
@@ -39,7 +27,7 @@ class Analyst():
         if self._halt:
             return done
 
-        for c in self._check_target:
+        for c in self._tag_order:
             if not self._check_list[c]:
                 done = False
         return done
@@ -60,7 +48,7 @@ class Analyst():
     def step(self):
         # fetch remained insights
         insights = []
-        for c in self._check_target:
+        for c in self._tag_order:
             insights = InsightIndex.query(self.insights, is_done=False, tag=c)
             if len(insights) > 0:
                 break

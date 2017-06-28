@@ -52,14 +52,15 @@ class NumericalScalingInsight(Insight):
 class NumericalScalingTransformer(BaseEstimator, TransformerMixin):
 
     def __init__(self, dfe, numerical_scaling_insight):
-        self.model_features = dfe.df.columns.tolist()
+        self.model_features = dfe.get_columns(include_target=False)
         self.targets = numerical_scaling_insight._scaled_columns
         self.scaler = StandardScaler() if not numerical_scaling_insight.minmax_scale else MinMaxScaler()
 
     def fit(self, X, y=None):
-        _X = X.dropna(subset=self.model_features)
-        _ = self.scaler.fit_transform(_X[self.model_features])
-        return self  # do nothing
+        needed = [t for t in self.targets if t in self.model_features]
+        _X = X.dropna(subset=needed)
+        _ = self.scaler.fit_transform(_X[needed])
+        return self
 
     def transform(self, X, y=None, copy=None):
         erased = []

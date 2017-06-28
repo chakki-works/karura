@@ -38,7 +38,7 @@ class DatetimeToCategoricalInsight(Insight):
 class DatetimeToCategoricalTransformer(BaseEstimator, TransformerMixin):
 
     def __init__(self, dfe, datetime_to_categorical_insight):
-        self.model_features = dfe.df.columns.tolist()
+        self.model_features = dfe.get_columns(include_target=False)
         self.targets = datetime_to_categorical_insight._categorized
 
     def fit(self, X, y=None):

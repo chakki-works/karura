@@ -179,3 +179,5 @@ class ModelSelectionInsight(Insight):
             "en": Description("The model accuracy is {:.3f}(model is {}). The contributions of each features are here.".format(*params), pic)
         }
 
+    def get_transformer(self, dfe):
+        return self.model

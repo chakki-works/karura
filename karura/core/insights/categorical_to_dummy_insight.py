@@ -41,7 +41,7 @@ class CategoricalToDummyInsight(Insight):
 class CategoricalToDummyTransformer(BaseEstimator, TransformerMixin):
 
     def __init__(self, dfe, categorical_to_dummy_insight):
-        self.model_features = dfe.df.columns.tolist()
+        self.model_features = dfe.get_columns(include_target=False)
         self.categorical_to_dummy = categorical_to_dummy_insight._categorical_to_dummy
 
     def fit(self, X, y=None):

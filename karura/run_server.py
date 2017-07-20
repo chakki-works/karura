@@ -14,6 +14,7 @@ def main():
     parse_command_line()
     app = application(options.debug)
     port = int(os.environ.get("PORT", options.port))
+    print("karura server running on {}".format(port))
     app.listen(port)
     tornado.ioloop.IOLoop.current().start()
 

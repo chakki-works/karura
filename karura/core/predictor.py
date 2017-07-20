@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.externals import joblib
 from karura.core.insight import InsightIndex
 from karura.core.dataframe_extension import DataFrameExtension
+from karura.env import get_store_path
 
 
 class PredictorConvertible():
@@ -60,19 +61,28 @@ class Predictor():
         return self.pipeline.predict(X)
 
     def save(self, path, model_name):
-        _path = os.path.join(path, model_name)
-        if not os.path.exists(_path):
-            os.mkdir(_path)
-        joblib.dump(self.pipeline, os.path.join(_path, model_name + ".pkl"))
-        return _path
+        if not os.path.exists(path):
+            os.mkdir(path)
+        joblib.dump(self.pipeline, os.path.join(path, "{}.pkl".format(model_name)))
+        return path
 
     @classmethod
     def load(cls, path, model_name):
-        _path = os.path.join(path, model_name)
-        if not os.path.exists(_path):
-            raise Exception("Model path {} does not exist".format(_path))
-        pipeline = joblib.load(os.path.join(_path, model_name + ".pkl"))
+        if not os.path.exists(path):
+            raise Exception("Model file does not exist.")
+        pipeline = joblib.load(os.path.join(path, "{}.pkl".format(model_name)))
         return Predictor(pipeline)
+
+    def save_to_env(self, env, app_id):
+        path = get_store_path()
+        path = os.path.join(path, env.domain)
+        return self.save(path, app_id)
+
+    @classmethod
+    def load_from_env(cls, env, app_id):
+        path = get_store_path()
+        path = os.path.join(path, env.domain)
+        return cls.load(path, app_id)
 
 
 class PredictionEstimator(BaseEstimator, TransformerMixin):
@@ -103,7 +113,10 @@ class DataFormatter(BaseEstimator, TransformerMixin):
         columns = X.columns.tolist()
         extras = [c for c in columns if c not in self.model_features]
         extras += [self.model_target]
-        X.drop(extras, inplace=True, axis=1)
+        for e in extras:
+            if e in X.columns:
+                X.drop(e, inplace=True, axis=1)
+
         for f in self.model_features:
             if f not in X.columns:
                 raise Exception("Feature {} is not supplied.".format(f))

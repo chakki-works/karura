@@ -106,7 +106,7 @@
         //check
         if(exist_feature && exist_target){
             Karura.show_notification("学習を開始しました．．．");
-            kintone.proxy(Karura.KARURA_HOST + "/train", "POST", {}, payload).then(function(args){
+            kintone.proxy(Karura.KARURA_HOST + "/train", "POST", {"Origin": location.origin}, payload).then(function(args){
                 var body = args[0];
                 var result = {};
                 try {

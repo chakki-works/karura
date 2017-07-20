@@ -1,0 +1,28 @@
+.title.top{
+    color: slategray;
+    padding: 7px 0px 7px 15px;
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+.user-icon{
+    width:20px;
+    height:20px;
+    display:inline-block;
+    vertical-align:middle;
+    border-radius:.2em;
+}
+
+meter{
+    width: 64px;
+    height: 64px;    
+}
+
+meter::-webkit-meter-bar {
+    width: 64px;
+    height: 64px;
+}

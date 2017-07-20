@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
+<link rel="stylesheet" href="{{ static_url('css/index.css') }}" type="text/css"/>
+{% end %}
+
+{% block body %}
+
+<h1 class="title top" >karura</h1>
+
+<div id="app" class="container">
+
+  <div class="tabs">
+    <ul>
+      <li v-on:click="activate('login')" v-bind:class="isActive('login')"><a>Login</a></li>
+      <li v-on:click="activate('register')" v-bind:class="isActive('register')"><a>Register</a></li>
+    </ul>
+  </div>
+
+  {% if "error" in globals() %}
+  <article class="message is-warning">
+    <div class="message-header">
+      <p>Warning</p>
+    </div>
+    <div class="message-body">
+      {{error}}
+  </div>
+  </article>
+  {% end %}
+
+  <form action="/auth" method="post" >
+
+    <div class="field">
+      <label class="label">domain</label>
+      <div class="control has-icons-left ">
+        <input class="input" name="domain" type="text" placeholder="your kintone domain">
+        <span class="icon is-small is-left"><i class="fa fa-cloud"></i></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">karura id</label>
+      <div class="control has-icons-left ">
+        <input class="input" name="user" type="text" placeholder="kintone login id for karura">
+        <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+      </div>
+    </div>
+    
+    <div class="field">
+      <label class="label">karura password</label>
+      <div class="control has-icons-left">
+        <input class="input" name="password" type="password" placeholder="kintone login password for karura">
+        <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+      </div>
+    </div>
+
+    <div class="field" v-show="isActive('register')">
+      <label class="label">karura password confirm</label>
+      <div class="control has-icons-left">
+        <input class="input" name="password_re" type="password" placeholder="kintone login password for karura">
+        <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+      </div>
+    </div>
+
+    <input type="hidden" name="kind" v-model="selected">
+
+    <hr/>
+    <div class="field is-grouped" v-show="isActive('login')">
+      <div class="control">
+        <button type="submit" class="button is-primary">Login</button>
+      </div>
+    </div>
+    <div class="field is-grouped" v-show="isActive('register')">
+      <div class="control">
+        <button type="submit" class="button is-success">Register</button>
+      </div>
+    </div>
+
+    {% module xsrf_form_html() %}
+  </form>
+
+</div>
+
+{% end %}
+
+{% block bottom %}
+  <script type="text/javascript" src="{{ static_url('js/index.js') }}"></script>
+  {% if "error" in globals() %}
+  <script>
+    instance.activate("{{kind}}");
+  </script>
+  {% end %}
+
+{% end %}

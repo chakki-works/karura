@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import numpy as np
 from karura.core.insight import Insight
 from karura.core.dataframe_extension import FType
 from sklearn.preprocessing import StandardScaler
@@ -13,21 +14,22 @@ class NumericalScalingInsight(Insight):
     def __init__(self, minmax_scale=False):
         super().__init__()
 
-        self.minmax_scale  = minmax_scale
-        self.scaler = StandardScaler() if not minmax_scale else MinMaxScaler()
+        self.minmax_scale = minmax_scale
+        self.scalers = {}
         self.index.as_preprocessing()
         self.automatic = True
         self._scaled_columns = []
     
-    def save(self, path):
-        self.path = path
-        joblib.dump(self.scaler, self._make_file_path(path))
-
     def adopt(self, dfe, interpreted=None):
         targets = self.get_insight_targets(dfe)
         self._scaled_columns = targets
         dfe.df.dropna(subset=targets, inplace=True)
-        dfe.df[targets] = self.scaler.fit_transform(dfe.df[targets])
+
+        for t in targets:
+            scaler = StandardScaler() if not self.minmax_scale else MinMaxScaler()
+            dfe.df[t] = scaler.fit_transform(dfe.df[t].values.reshape(-1, 1).astype(np.float32))
+            self.scalers[t] = scaler
+
         return True
 
     def get_insight_targets(self, dfe):
@@ -45,33 +47,19 @@ class NumericalScalingInsight(Insight):
 
     def get_transformer(self, dfe):
         transformer = NumericalScalingTransformer(dfe, self)
-        transformer.fit(dfe.df)
         return transformer
 
 
 class NumericalScalingTransformer(BaseEstimator, TransformerMixin):
 
-    def __init__(self, dfe, numerical_scaling_insight):
-        self.model_features = dfe.get_columns(include_target=False)
-        self.targets = numerical_scaling_insight._scaled_columns
-        self.scaler = StandardScaler() if not numerical_scaling_insight.minmax_scale else MinMaxScaler()
-
-    def fit(self, X, y=None):
-        needed = [t for t in self.targets if t in self.model_features]
-        _X = X.dropna(subset=needed)
-        _ = self.scaler.fit_transform(_X[needed])
-        return self
+    def __init__(self, dfe, ns_insight):
+        model_features = dfe.get_columns(include_target=False)
+        self.target = [c for c in ns_insight._scaled_columns if c in model_features]
+        self.scalers = {t: ns_insight.scalers[t] for t in self.target}
 
     def transform(self, X, y=None, copy=None):
-        erased = []
-        useful = []
-        for t in self.targets:
-            if t in self.model_features:
-                useful.append(t)
-            else:
-                erased.append(t)
-            
-        X.drop(erased, axis=1, inplace=True)
-        X[useful] = X[useful].fillna(0)
-        X[useful] = self.scaler.transform(X[useful])
+        X[self.target] = X[self.target].fillna(0)
+        for t in self.target:
+            X[t] = self.scalers[t].transform(X[t].values.reshape(-1, 1).astype(np.float32))
+
         return X

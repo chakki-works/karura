@@ -28,14 +28,14 @@ class TestNumericalScalingInsight(unittest.TestCase):
 
         insight.adopt(dfe)
         scaled1 = dfe.df[targets]
-        self.assertTrue(scaled1.mean().sum() < 1.0e-10)
+        self.assertTrue(scaled1.mean().sum() < 1.0e-5)
         self.assertTrue(scaled1.std().mean() - 1 < 0.1)
 
         dfe2 = DataFrameExtension.read_csv(self.FILE_NAME)
         transformer = insight.get_transformer(dfe2)
         scaled2 = transformer.transform(dfe2.df)
         scaled2 = scaled2[targets]
-        self.assertTrue(scaled2.mean().sum() < 1.0e-10)
+        self.assertTrue(scaled2.mean().sum() < 1.0e-5)
         self.assertTrue(scaled2.std().mean() -1 < 0.1)
 
         for c in scaled1.columns:

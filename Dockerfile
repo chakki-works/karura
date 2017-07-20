@@ -10,7 +10,7 @@ RUN conda install -y nomkl
 
 # matplotlib issue
 # https://github.com/ContinuumIO/anaconda-issues/issues/1068
-RUN conda install -y numpy scipy scikit-learn matplotlib pandas pyqt=4.11
+RUN conda install -y numpy scipy scikit-learn matplotlib pandas
 
 ADD ./requirements.txt /tmp/requirements.txt
 RUN pip install -qr /tmp/requirements.txt

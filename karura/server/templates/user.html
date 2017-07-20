@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
+<link rel="stylesheet" href="{{ static_url('css/index.css') }}" type="text/css"/>
+{% end %}
+
+{% block body %}
+
+<h1 class="title top" >karura</h1>
+
+<div id="app" class="container">
+
+  <div class="tabs">
+    <ul>
+      <li v-on:click="activate('home')" v-bind:class="isActive('home')"><a>Home</a></li>
+      <li v-on:click="activate('account')" v-bind:class="isActive('account')"><a>Acount</a></li>
+    </ul>
+  </div>
+
+  <div id="home" v-show="isActive('home')"> 
+      <h1 class="title top" >Welcome</h1>
+  </div>
+
+  <div id="account" v-show="isActive('account')">
+    {% if "error" in globals() %}
+    <article class="message is-warning">
+      <div class="message-header">
+        <p>Warning</p>
+      </div>
+      <div class="message-body">
+        {{error}}
+    </div>
+    </article>
+    {% end %}
+
+    {% if "success" in globals() %}
+    <article class="message is-primary">
+      <div class="message-header">
+        <p>Warning</p>
+      </div>
+      <div class="message-body">
+        {{success}}
+    </div>
+    </article>
+    {% end %}
+
+    <form action="/auth" method="POST" >
+        
+      <div class="field">
+        <label class="label">old password</label>
+        <div class="control has-icons-left">
+            <input class="input" name="password_old" type="password" placeholder="kintone login password for karura">
+            <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">new password</label>
+        <div class="control has-icons-left">
+            <input class="input" name="password" type="password" placeholder="kintone login password for karura">
+            <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">new password (re)</label>
+        <div class="control has-icons-left">
+            <input class="input" name="password_re" type="password" placeholder="kintone login password for karura">
+            <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+        </div>
+      </div>
+
+      {% module xsrf_form_html() %}
+      <input type="hidden" name="_method" value="PUT">
+      <div class="field is-grouped">
+        <div class="control">
+            <button type="submit" class="button is-warning">Change Password</button>
+        </div>
+      </div>
+    </form>
+
+    <hr/>
+
+    <form action="/auth" method="POST" >
+        
+      <div class="field">
+        <label class="label">karura password</label>
+        <div class="control has-icons-left">
+            <input class="input" name="password" type="password" placeholder="kintone login password for karura">
+            <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+        </div>
+      </div>
+
+      {% module xsrf_form_html() %}
+      <input type="hidden" name="_method" value="DELETE">
+
+      <div class="field is-grouped">
+        <div class="control">
+            <button type="submit" class="button  is-danger">Delete</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+{% end %}
+
+{% block bottom %}
+  <script type="text/javascript" src="{{ static_url('js/user.js') }}"></script>
+  {% if "success" in globals() or "error" in globals() %}
+    <script>
+        instance.activate("account");
+    </script>
+  {% end %}
+{% end %}

@@ -10,7 +10,7 @@ import karura.core.insights as I
 
 
 class TestOnKintone(unittest.TestCase):
-    APP_ID = 69  # it depends on environment
+    APP_ID = 333  # it depends on environment
 
     def test_analyst(self):
         print("Analyst --------------")
@@ -61,15 +61,28 @@ class TestOnKintone(unittest.TestCase):
         request = json.loads(KINTONE_REQUEST.replace("###", str(self.APP_ID)))
         krequest = kintoneRequest()
         dfe = krequest.request_to_dfe(request)
+        dfe.to_categorical(["向き"])
         autorun = make_autorun(dfe, feature_type_estimation=False)
         descriptions = autorun.execute()
         for d in descriptions:
             print(d)
 
 
+        print("Predict from kintone Request --------------")
+        record = json.loads(KINTONE_RECORD.replace("###", str(self.APP_ID)))
+        df = krequest.record_to_df(record)
+        predictor = autorun.to_predictor()
+        pred = predictor.predict(df)
+        print("estimated value: {}".format(pred))
+        
+
 KINTONE_REQUEST = """
-{"app_id":"###","fields":{"数値_3":{"usage":1},"文字列__1行_":{"usage":-1},"ドロップダウン":{"usage":0},"数値_0":{"usage":0},"数値_2":{"usage":0},"数値_1":{"usage":0},"ドロップダウン_0":{"usage":0},"数値":{"usage":0}},
+{"app_id":"###","fields":{"house_price":{"usage":1},"name":{"usage":-1},"direction":{"usage":0},"area_value":{"usage":0},"years_old_value":{"usage":0},"walk_time_value":{"usage":0},"stairs_value":{"usage":0}},
 "view": "分析用一覧"}
+"""
+
+KINTONE_RECORD = """
+{"app_id":"###","values":{"direction":"SW","area_value":"21.56","years_old_value":"23","walk_time_value":"8","stairs_value":"4"}}
 """
 
 

@@ -89,5 +89,7 @@ ENV/
 # Rope project settings
 .ropeproject
 
+.DS_Store
 keys.json
 tests/karura_test/test_analyst_kintone_ad.py
+trained_models/

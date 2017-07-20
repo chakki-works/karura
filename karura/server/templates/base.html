@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>arXivTimes Indicator</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="MobileOptimized" content="320">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.4.2/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ static_url('css/base.css') }}" type="text/css"/>
+    {% block head %}{% end %}
+</head>
+<body class="layout-documentation page-layout" style="zoom: 1;">
+    <div class="hero-head">
+    <nav class="nav">
+        <div class="nav-left">
+            <a class="nav-item" href="/">
+                <img src="{{ static_url('images/karura.png') }}" alt="arXivTimes logo">
+            </a>
+        </div>
+
+        <!-- This "nav-toggle" hamburger menu is only visible on mobile -->
+        <!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->
+        <span class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+
+    </nav>
+    </div>
+    <div>
+        {% block body %}{% end %}
+    </div>
+    {% block bottom %}{% end %}
+</body>
+</html>

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pandas as pd
 import pykintone
 from karura.env import get_kintone_env
 from karura.core.kintone.application import Application
@@ -9,7 +10,7 @@ class kintoneRequest():
 
     def __init__(self, env=None):
         self.env = env if env is not None else get_kintone_env()
-    
+
     def request_to_dfe(self, request_json):
         app_id = request_json["app_id"]
         field_settings = request_json["fields"]
@@ -57,3 +58,20 @@ class kintoneRequest():
         dfe = kapp.load(app_id, query, fields, target)
 
         return dfe
+
+    def record_to_df(self, request_json):
+        app_id = request_json["app_id"]
+        values = request_json["values"]
+        kapp = Application(self.env)
+        fields_d = kapp.get_fields(app_id)
+
+        columns = []
+        data = []
+        for k in values:
+            if k not in fields_d:
+                continue
+            f = fields_d[k]
+            columns.append(f.label)
+            data.append(values[k])
+        df = pd.DataFrame(data=[data], columns=columns)
+        return df

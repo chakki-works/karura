@@ -1,0 +1,24 @@
+{
+    "manifest_version": 1,
+    "version": 1,
+    "type": "APP",
+    "name": {
+        "ja": "Karura Client Plugin",
+        "en": "Karura Client Plugin",
+        "zh": "Karura Client Plugin"
+    },
+    "description": {
+        "ja": "Karuraを利用する側のアプリに導入するプラグインです。'price'という項目がある場合、'price_prediction'という項目を設定するとそこに対し予測により入力が行われます。",
+        "en": "Plugin for Karura. If you have the 'price' field and then add the 'price_prediction' field,  karura will input predicted value to there.",
+        "zh": "Plugin for Karura. If you have the 'price' field and then add the 'price_prediction' field,  karura will input predicted value to there."
+    },
+    "icon": "image/icon.png",
+    "desktop": {
+        "js": [
+            "js/karura.client.js"
+        ],
+        "css": [
+            "css/karura.client.css"
+        ]
+    }
+}

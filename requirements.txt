@@ -1,3 +1,5 @@
 pykintone>=0.3.6
 slackbot>=0.4.1
 tornado>=4.4.2
+cryptography>=2.0
+pymongo>=3.4.0

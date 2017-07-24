@@ -93,3 +93,4 @@ ENV/
 keys.json
 tests/karura_test/test_analyst_kintone_ad.py
 trained_models/
+karura-kintone/_plugin-sdk

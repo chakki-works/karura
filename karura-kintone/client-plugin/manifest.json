@@ -13,6 +13,11 @@
         "zh": "Plugin for Karura. If you have the 'price' field and then add the 'price_prediction' field,  karura will input predicted value to there."
     },
     "icon": "image/icon.png",
+    "homepage_url": {
+        "ja": "https://github.com/chakki-works/karura",
+        "en": "https://github.com/chakki-works/karura",
+        "zh": "https://github.com/chakki-works/karura"
+    },
     "desktop": {
         "js": [
             "js/karura.client.js"

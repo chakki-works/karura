@@ -20,7 +20,12 @@
 
   <div id="home" v-show="isActive('home')"> 
       <h1 class="title" >Now start to use karura!</h1>
-      <a href="" target="_tutorial">Go to Tutorial</a>
+      <a href="http://qiita.com/icoxfog417/private/ba6cc8c804f09fd2b16e" target="_tutorial">Go to Tutorial</a>
+      <br/><br/>
+      <form action="/user" method="POST" >
+        {% module xsrf_form_html() %}
+        <button type="submit" class="button is-primary">Logout</button>
+      </form>
     </div>
 
   <div id="account" v-show="isActive('account')">

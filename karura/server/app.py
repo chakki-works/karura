@@ -103,7 +103,7 @@ class AuthenticationHandler(PageHandler):
 
         if key:
             self.set_secure_cookie(self.COOKIE_NAME, key)
-            self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user))
+            self.render("user.html", key=DatabaseAPI.key_to_dict(key))
         else:
             self.render("index.html", kind=kind, error=error["error"])
 
@@ -165,6 +165,10 @@ class UserHandler(PageHandler):
     def get(self):
         self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user))
 
+    @tornado.web.authenticated
+    def post(self):
+        self.clear_cookie(self.COOKIE_NAME)
+        self.render("index.html")
 
 """
 karura api handlers

@@ -67,9 +67,15 @@ class DatabaseAPI():
     def __make_user_key(self, domain, user):
         return user + "@" + domain
 
-    def key_split(self, key):
+    @classmethod
+    def key_split(cls, key):
         user, domain = key.rsplit("@")
         return user, domain
+
+    @classmethod
+    def key_to_dict(cls, key):
+        user, domain = cls.key_split(key)
+        return {"user": user, "domain": domain}
 
     def register_user(self, domain, user, password):
         self.__authentication_parameter_check(domain, user, password)

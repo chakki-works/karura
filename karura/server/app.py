@@ -56,7 +56,7 @@ class IndexHandler(PageHandler):
         if not self.current_user:
             self.render("index.html")
         else:
-            self.render("user.html", user=self.current_user)
+            self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user))
 
 
 class AuthenticationHandler(PageHandler):
@@ -103,7 +103,7 @@ class AuthenticationHandler(PageHandler):
 
         if key:
             self.set_secure_cookie(self.COOKIE_NAME, key)
-            self.render("user.html", user=self.current_user)
+            self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user))
         else:
             self.render("index.html", kind=kind, error=error["error"])
 
@@ -130,9 +130,9 @@ class AuthenticationHandler(PageHandler):
             error = ErrorMessage.create("パスワードの変更に失敗しました")
 
         if error:
-            self.render("user.html", user=self.current_user, error=error["error"])
+            self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user), error=error["error"])
         else:
-            self.render("user.html", user=self.current_user, success="パスワードを変更しました")
+            self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user), success="パスワードを変更しました")
 
     @tornado.web.authenticated
     def delete(self):
@@ -153,7 +153,7 @@ class AuthenticationHandler(PageHandler):
             error = ErrorMessage.create("アカウントの削除に失敗しました")
 
         if error:
-            self.render("user.html", user=self.current_user, error=error["error"])
+            self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user), error=error["error"])
         else:
             self.clear_cookie(self.COOKIE_NAME)
             self.render("index.html")
@@ -163,7 +163,7 @@ class UserHandler(PageHandler):
 
     @tornado.web.authenticated
     def get(self):
-        self.render("user.html", user=self.current_user)
+        self.render("user.html", key=DatabaseAPI.key_to_dict(self.current_user))
 
 
 """

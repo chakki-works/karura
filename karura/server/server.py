@@ -24,6 +24,7 @@ def application(debug=False):
             (r"/ping", PingHandler),
             (r"/train", api.TrainingHandler),
             (r"/predict", api.PredictionHandler),
+            (r"/download", api.DownloadHandler),
             (r"/", site.IndexHandler),
             (r"/auth", site.AuthenticationHandler),
             (r"/user", site.UserHandler),

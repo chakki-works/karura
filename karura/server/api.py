@@ -2,8 +2,10 @@
 import os
 from functools import wraps
 from urllib.parse import urlparse
+import tempfile
 import tornado.web
 import tornado.escape
+import pandas as pd
 from karura.env import EnvironmentalSettingException
 from karura.server.message import ErrorMessage
 from karura.core.kintone.kintone_request import kintoneRequest
@@ -115,3 +117,42 @@ class PredictionHandler(APIHandler):
             "prediction": "{}".format(pred[0])
         }
         self.write(result)
+
+
+class DownloadHandler(APIHandler):
+
+    def initialize(self):
+        if self._transforms is None:
+            self._transforms = [tornado.web.GZipContentEncoding]
+
+    def download_file(self, df, file_name):
+        with tempfile.TemporaryDirectory() as dir:
+            path = os.path.join(dir, file_name)
+            df.to_csv(path, encoding="utf-8", compression="gzip")
+            print(path)
+            with open(path, "rb") as f:
+                self.set_header("Content-Encoding", "gzip")
+                self.set_header("Content-Type", "text/csv")
+                self.set_header("Content-Disposition", "attachment; filename=\"{}\"".format(file_name))
+                self.set_header("Content-Length", os.path.getsize(path))
+                self.write(f.read())
+
+    def get(self):
+        df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+        self.download_file(df, "predictions.csv")
+
+    @validate_request
+    def post(self, domain):
+        body = tornado.escape.json_decode(self.request.body)
+        app_id = body["app_id"]
+        api = DatabaseAPI()
+        krequest = kintoneRequest(env=api.get_kintone_env(domain))
+        dfe = krequest.download(body)
+        _df = dfe.df.copy(deep=True)
+        predictor = Predictor.load_from_env(krequest.env, app_id)
+        pred = predictor.predict(dfe.df)
+        dfe = None  # free memory
+
+        _df.loc[:, "prediction"] = pred
+
+        self.download_file(_df, "prediction.csv")

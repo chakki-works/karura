@@ -128,6 +128,30 @@
 
     }
 
+    _karura.download = function(app_id, record){
+        var view = record.record.view.value;
+        var payload = {"app_id": app_id, "fields": {}, "view": view};
+
+        kintone.proxy(Karura.KARURA_HOST + "/download", "POST", {"Origin": location.origin}, payload).then(function(args){
+            var content = args[0];
+            var header = args[2];
+            var fileName = "download.csv";
+            var disposition = header["Content-Disposition"];
+            if(disposition && disposition.indexOf("attachment") !== -1) {
+                var fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                var matches = fileNameRegex.exec(disposition);
+                if (matches != null && matches[1]) fileName = matches[1].replace(/['"]/g, "");
+            }
+            var link = document.createElement("a");
+            link.setAttribute("download", fileName);
+            var blob = new Blob([content], {type: header["Content-Type"]});
+            link.href = window.URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+
     _karura.show_result = function(result, record){
         var score = result["score"];
         score = Math.round(score * 1000) / 1000;
@@ -174,6 +198,12 @@
         resultArea.appendChild(canvas);
     }
 
+    return _karura
+
+})();
+
+(function(){
+
     kintone.events.on(["app.record.edit.show", "app.record.create.show"], function(event){
         //set the form field setup button
         var read_fields = document.createElement("button");
@@ -207,6 +237,22 @@
         }
         kintone.app.record.getSpaceElement("train_button").appendChild(begin_train);
 
+        //set download button
+        var exe_download = document.createElement("button");
+        exe_download.id = "exe_download"
+        exe_download.innerHTML = "予測データのダウンロード"
+        exe_download.className = "btn-karura";
+        exe_download.onclick = function(){
+            var record = kintone.app.record.get();
+            var app_id = record["record"]["app_id"]["value"];
+            if(app_id){
+                Karura.download(app_id, record);
+            }else{
+                Karura.show_notification("アプリ番号がまだ入力されていません", true);
+            }
+        }
+        kintone.app.record.getSpaceElement("exe_download").appendChild(exe_download);
+
         //show image
         var imageCache = event.record.image_cache.value;
         if(imageCache){
@@ -222,6 +268,4 @@
         }
     });
 
-    return _karura
-
-})();
+})()

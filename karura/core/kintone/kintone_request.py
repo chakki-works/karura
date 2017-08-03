@@ -75,3 +75,34 @@ class kintoneRequest():
             data.append(values[k])
         df = pd.DataFrame(data=[data], columns=columns)
         return df
+
+    def download(self, request_json):
+        app_id = request_json["app_id"]
+        view_name = request_json["view"]
+
+        # confirm view
+        app = pykintone.login(self.env.domain, self.env.login_id, self.env.password).app(app_id)
+        view = None
+        query = ""
+        fields = []
+        if view_name:
+            views = app.administration().view().get().views
+            for v in views:
+                if v.name == view_name:
+                    view = v
+                    break
+
+            if view is None:
+                raise kintoneException("指定された名前のビュー「{}」は、アプリに作成されていません".format(view_name))
+        
+            # make query
+            query = view.filter_cond if view.filter_cond else ""
+            query += " order by " + view.sort if view.sort else ""
+
+            fields = view.fields
+
+        # make dfe
+        kapp = Application(self.env)
+        dfe = kapp.load(app_id, query, fields)
+
+        return dfe

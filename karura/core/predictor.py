@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.externals import joblib
@@ -45,7 +46,7 @@ class Predictor():
                 label_formatter = t_insights[0].get_transformer(dfe)
             elif t == InsightIndex.MODEL_SELECTION:
                 model = t_insights[0].get_transformer(dfe)
-                p = PredictionEstimator(model, label_formatter)
+                p = PredictionEstimator(dfe.target, model, label_formatter)
                 transformers.append(("DataFormatter", DataFormatter(dfe)))
                 transformers.append((model.__class__.__name__, p))
             else:
@@ -87,7 +88,8 @@ class Predictor():
 
 class PredictionEstimator(BaseEstimator, TransformerMixin):
 
-    def __init__(self, model, label_formatter):
+    def __init__(self, target, model, label_formatter):
+        self.target = target
         self.model = model
         self.label_formatter = label_formatter
 
@@ -97,6 +99,7 @@ class PredictionEstimator(BaseEstimator, TransformerMixin):
     def predict(self, X):
         pred = self.model.predict(X)
         pred_f = self.label_formatter.inverse_transform(pred)
+        pred_f = pd.Series(pred_f, name=self.target)
         return pred_f
 
 

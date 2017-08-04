@@ -13,6 +13,15 @@ class FType(Enum):
     unique = 4
 
 
+FTypeNames = {
+    FType.categorical: "CAT",
+    FType.numerical: "NUM",
+    FType.datetime: "DATE",
+    FType.text: "TXT",
+    FType.unique: "UNIQ"
+}
+
+
 class DataFrameExtension():
     """
     Manage the Extended information about dataframe columns.

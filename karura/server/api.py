@@ -9,6 +9,7 @@ import pandas as pd
 from karura.env import EnvironmentalSettingException
 from karura.server.message import ErrorMessage
 from karura.core.kintone.kintone_request import kintoneRequest
+from karura.core.kintone.kintone_exception import kintoneException
 from karura.default_config import make_autorun
 from karura.core.predictor import Predictor
 from karura.database_api import DatabaseAPI

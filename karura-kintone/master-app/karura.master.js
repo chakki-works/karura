@@ -28,7 +28,7 @@
     _karura.read_fields = function(app_id, record){
         var registered_code = [];
         var ignores = ["CREATED_TIME", "CREATOR", "RECORD_NUMBER", "SPACER", "STATUS_ASSIGNEE", "MODIFIER", "UPDATED_TIME", "STATUS", "CATEGORY"];
-        record.record.field_settings.value = []  // todo: do not clear if same app, existing setting
+        record.field_settings.value = []  // todo: do not clear if same app, existing setting
 
         kintone.api("/k/v1/app/form/fields", "GET", {"app": app_id}).then(function(resp){
             var forms = resp.properties;
@@ -70,22 +70,22 @@
                         }
                     }
                 }
-                record.record.field_settings.value.push(newRow);
+                record.field_settings.value.push(newRow);
             }
 
             //set app name
             kintone.api("/k/v1/app", "GET", {"id": app_id}).then(function(resp){
-                record.record.app_name.value = resp.name;
-                kintone.app.record.set(record);
+                record.app_name.value = resp.name;
+                kintone.app.record.set({record: record});
             });
 
         })
     }
 
     _karura.begin_train = function(app_id, record){
-        var view = record.record.view.value;
+        var view = record.view.value;
         var payload = {"app_id": app_id, "fields": {}, "view": view};
-        var table = record.record.field_settings.value;
+        var table = record.field_settings.value;
         var usages = ["予測に使う", "予測値"];
         var exist_target = false;
         var exist_feature = false;
@@ -129,26 +129,33 @@
     }
 
     _karura.download = function(app_id, record){
-        var view = record.record.view.value;
+        var view = record.view.value;
         var payload = {"app_id": app_id, "fields": {}, "view": view};
 
         kintone.proxy(Karura.KARURA_HOST + "/download", "POST", {"Origin": location.origin}, payload).then(function(args){
             var content = args[0];
+            var status = args[1];
             var header = args[2];
-            var fileName = "download.csv";
-            var disposition = header["Content-Disposition"];
-            if(disposition && disposition.indexOf("attachment") !== -1) {
-                var fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                var matches = fileNameRegex.exec(disposition);
-                if (matches != null && matches[1]) fileName = matches[1].replace(/['"]/g, "");
+
+            if(status == 200){
+                var fileName = "download.csv";
+                var disposition = header["Content-Disposition"];
+                if(disposition && disposition.indexOf("attachment") !== -1) {
+                    var fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    var matches = fileNameRegex.exec(disposition);
+                    if (matches != null && matches[1]) fileName = matches[1].replace(/['"]/g, "");
+                }
+                var link = document.createElement("a");
+                link.setAttribute("download", fileName);
+                var blob = new Blob([content], {type: header["Content-Type"]});
+                link.href = window.URL.createObjectURL(blob);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }else{
+                Karura.show_notification("ダウンロード処理でエラーが発生しました", true);
             }
-            var link = document.createElement("a");
-            link.setAttribute("download", fileName);
-            var blob = new Blob([content], {type: header["Content-Type"]});
-            link.href = window.URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+
         });
     }
 
@@ -156,8 +163,8 @@
         var score = result["score"];
         score = Math.round(score * 1000) / 1000;
         var messages = result["messages"];
-        record.record.message_table.value = []
-        record.record.accuracy.value = score;
+        record.message_table.value = []
+        record.accuracy.value = score;
 
         for(var i = 0; i < messages.length; i++){
             var m = messages[i];
@@ -173,10 +180,10 @@
                     }
                 }
             }
-            record.record.message_table.value.push(newRow);
+            record.message_table.value.push(newRow);
         }
-        record.record.image_cache.value = result.image;
-        kintone.app.record.set(record);
+        record.image_cache.value = result.image;
+        kintone.app.record.set({record: record});
         Karura.show_image(result.image);
     }
 
@@ -202,70 +209,77 @@
 
 })();
 
-(function(){
-
-    kintone.events.on(["app.record.edit.show", "app.record.create.show"], function(event){
-        //set the form field setup button
-        var read_fields = document.createElement("button");
-        read_fields.id = "read_fields";
-        read_fields.innerHTML = "アプリ情報の読み込み";
-        read_fields.className = "btn-karura align-float";
-        read_fields.onclick = function(){
-            var record = kintone.app.record.get();
-            var app_id = record["record"]["app_id"]["value"];
-            if(app_id){
-                Karura.read_fields(app_id, record);
-            }else{
-                Karura.show_notification("アプリ番号がまだ入力されていません", true);
-            }
-        }
-        kintone.app.record.getSpaceElement("read_fields").appendChild(read_fields);
-
-        //set the begin training button
-        var begin_train = document.createElement("button");
-        begin_train.id = "begin_train"
-        begin_train.innerHTML = "学習を開始する"
-        begin_train.className = "btn-karura";
-        begin_train.onclick = function(){
-            var record = kintone.app.record.get();
-            var app_id = record["record"]["app_id"]["value"];
-            if(app_id){
-                Karura.begin_train(app_id, record);
-            }else{
-                Karura.show_notification("アプリ番号がまだ入力されていません", true);
-            }
-        }
-        kintone.app.record.getSpaceElement("train_button").appendChild(begin_train);
-
-        //set download button
-        var exe_download = document.createElement("button");
-        exe_download.id = "exe_download"
-        exe_download.innerHTML = "予測データのダウンロード"
-        exe_download.className = "btn-karura";
-        exe_download.onclick = function(){
-            var record = kintone.app.record.get();
-            var app_id = record["record"]["app_id"]["value"];
-            if(app_id){
-                Karura.download(app_id, record);
-            }else{
-                Karura.show_notification("アプリ番号がまだ入力されていません", true);
-            }
-        }
-        kintone.app.record.getSpaceElement("exe_download").appendChild(exe_download);
-
+var KaruraElement = (function(){
+    _karuraElement = {}
+    _karuraElement.showImage = function(event){
         //show image
         var imageCache = event.record.image_cache.value;
         if(imageCache){
             Karura.show_image(imageCache)
         }
+    }
+
+    _karuraElement.addButton = function(buttonId, title, callback){
+        var button = document.createElement("button");
+        button.id = buttonId;
+        button.innerHTML = title;
+        button.className = "btn-karura";  //align-float
+        button.onclick = callback;
+        kintone.app.record.getSpaceElement(buttonId).appendChild(button);
+    }
+
+    _karuraElement.addDownloadButton = function(event){
+        KaruraElement.addButton("exe_download", "予測データのダウンロード", function(){
+            var record = event ? event.record : kintone.app.record.get()["record"];
+            var app_id = record["app_id"]["value"];
+            var image_cache = record["image_cache"]["value"];
+            if(app_id && image_cache){
+                Karura.download(app_id, record);
+            }else{
+                if(!app_id){
+                    Karura.show_notification("アプリ番号がまだ入力されていません", true);
+                }else{
+                    Karura.show_notification("モデルがまだ作成されていません", true);
+                }
+            }
+        })
+    }
+
+    return _karuraElement;
+})();
+
+(function(){
+
+    kintone.events.on(["app.record.edit.show", "app.record.create.show"], function(event){
+        KaruraElement.addButton("read_fields", "アプリ情報の読み込み", function(){
+            var record = kintone.app.record.get();
+            var app_id = record["record"]["app_id"]["value"];
+            if(app_id){
+                Karura.read_fields(app_id, record.record);
+            }else{
+                Karura.show_notification("アプリ番号がまだ入力されていません", true);
+            }
+        })
+
+        KaruraElement.addButton("begin_train", "学習を開始する", function(){
+            var record = kintone.app.record.get();
+            var app_id = record["record"]["app_id"]["value"];
+            if(app_id){
+                Karura.begin_train(app_id, record.record);
+            }else{
+                Karura.show_notification("アプリ番号がまだ入力されていません", true);
+            }
+        })
+
+        //set download button
+        KaruraElement.addDownloadButton(event);
+        KaruraElement.showImage(event);
 
     });
 
     kintone.events.on(["app.record.detail.show"], function(event){
-        var imageCache = event.record.image_cache.value;
-        if(imageCache){
-            Karura.show_image(imageCache)
-        }
+        KaruraElement.addDownloadButton(event);
+        KaruraElement.showImage(event);
     });
 
-})()
+})();

@@ -20,7 +20,7 @@ class DatabaseAPI():
         if self._database is not None:
             return self._database
         else:
-            self.__client = MongoClient(self.database_uri)
+            self.__client = MongoClient(self.database_uri, serverSelectionTimeoutMS=2)
             db = self.__client.get_default_database()
             if self._alternative_db:
                 db = self.__client[self._alternative_db]
@@ -132,16 +132,18 @@ class DatabaseAPI():
             raise Exception("Change password is failed")
 
     def get_kintone_env(self, domain):
-        db = self._get_database()
-        user_db = db[self.USER_COLLECTION]
-
-        registered = user_db.find_one({"domain": domain})
-        if not registered:
+        try:
+            db = self._get_database()
+            user_db = db[self.USER_COLLECTION]
+            registered = user_db.find_one({"domain": domain})
+            if not registered:
+                return None
+            user, domain = self.key_split(registered["key"])
+            env = kintoneEnv(domain, user, self.__decrypt(registered["password"]))
+            return env
+        except Exception as ex:
             return None
-        user, domain = self.key_split(registered["key"])        
-        env = kintoneEnv(domain, user, self.__decrypt(registered["password"]))
-        return env
-
+    
     def close(self, with_drop=False):
         if self._database is not None:
             if with_drop:

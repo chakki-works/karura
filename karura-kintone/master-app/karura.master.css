@@ -3,7 +3,7 @@
     padding: 10px 20px 10px 20px;
 }
 
-.align-float{
+.btn-inline{
     height: 35px;
     margin-top: 35px;
     padding: 10px 20px 10px 20px;
@@ -22,4 +22,17 @@
 
 .label-karura.type-error{
     color: coral;
+}
+
+#karura-upload {
+    border-left: 5px solid #3498db;
+    border-radius: 3px;
+}
+
+#karura-upload label{
+    margin-left: 15px;
+}
+
+#karura-upload button{
+    margin-left: 0px;
 }

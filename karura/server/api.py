@@ -74,6 +74,10 @@ class TrainingHandler(APIHandler):
         api = DatabaseAPI()
         krequest = kintoneRequest(env=api.get_kintone_env(domain))
         dfe = krequest.request_to_dfe(body)
+        self.train(self, app_id, krequest, dfe)
+
+    @classmethod
+    def train(cls, handler, app_id, krequest, dfe):
         autorun = make_autorun(dfe, feature_type_estimation=False)
         descriptions = autorun.execute()
         model = autorun.result()
@@ -98,7 +102,7 @@ class TrainingHandler(APIHandler):
         predictor = autorun.to_predictor()
         predictor.save_to_env(krequest.env, app_id)
 
-        self.write(result)
+        handler.write(result)
 
 
 class PredictionHandler(APIHandler):
@@ -135,17 +139,17 @@ class DownloadHandler(APIHandler):
 
         with tempfile.TemporaryDirectory() as dir:
             path = os.path.join(dir, file_name)
-            df.to_csv(path, encoding="utf-8", compression="gzip", columns=df.columns.tolist())
+            df.to_csv(path, sep="\t", index=False, encoding="utf-8", compression="gzip", columns=df.columns.tolist())
             with open(path, "rb") as f:
                 self.set_header("Content-Encoding", "gzip")
-                self.set_header("Content-Type", "text/csv")
+                self.set_header("Content-Type", "text/tab-separated-values")
                 self.set_header("Content-Disposition", "attachment; filename=\"{}\"".format(file_name))
                 self.set_header("Content-Length", os.path.getsize(path))
                 self.write(f.read())
 
     def get(self):
         df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-        self.download_file(df, "predictions.csv")
+        self.download_file(df, "predictions.tsv")
 
     @validate_request
     def post(self, domain):
@@ -169,7 +173,7 @@ class DownloadHandler(APIHandler):
             else:
                 type_header[c] = ""
             if c == pred.name:
-                type_header[c] += "/TGT"
+                type_header[c] += "/TGT"  # todo: control attirubte not in api
             elif c == pred_column:
                 type_header[c] += "/PRED"
 
@@ -177,24 +181,20 @@ class DownloadHandler(APIHandler):
         dfe = None  # free memory
         ordered = [c for c in _df.columns if c not in [pred.name, pred_column]] + [pred.name, pred_column]
         _df = _df[ordered]
-        self.download_file(_df, "prediction.csv", type_header)
+        self.download_file(_df, "prediction.tsv", type_header)
 
 
 class UploadHandler(APIHandler):
 
     @validate_request
     def post(self, domain):
-        body = tornado.escape.json_decode(self.request.body)
-        print(body)
-        app_id = body["app_id"]
+        app_id = self.get_argument("app_id", None, True)
+        error = None
+        if not app_id or not app_id.isdigit():
+            error = ErrorMessage.create("アプリケーションIDが正しく指定されていません")
+        
         api = DatabaseAPI()
         krequest = kintoneRequest(env=api.get_kintone_env(domain))
-        dfe = krequest.download(body)
-        _df = dfe.df.copy(deep=True)
-        predictor = Predictor.load_from_env(krequest.env, app_id)
-        pred = predictor.predict(dfe.df)
-        dfe = None  # free memory
+        dfe = krequest.file_to_df(self.request.body)
 
-        _df.loc[:, "prediction"] = pred
-
-        self.download_file(_df, "prediction.csv")
+        TrainingHandler.train(self, app_id, krequest, dfe)

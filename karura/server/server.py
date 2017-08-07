@@ -25,6 +25,7 @@ def application(debug=False):
             (r"/train", api.TrainingHandler),
             (r"/predict", api.PredictionHandler),
             (r"/download", api.DownloadHandler),
+            (r"/upload", api.UploadHandler),
             (r"/", site.IndexHandler),
             (r"/auth", site.AuthenticationHandler),
             (r"/user", site.UserHandler),

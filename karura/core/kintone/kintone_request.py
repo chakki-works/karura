@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from io import BytesIO
 import pandas as pd
 import pykintone
 from karura.env import get_kintone_env
 from karura.core.kintone.application import Application
 from karura.core.kintone.kintone_exception import kintoneException
+from karura.core.dataframe_extension import FType, FTypeNames, DataFrameExtension
 
 
 class kintoneRequest():
@@ -105,4 +107,55 @@ class kintoneRequest():
         kapp = Application(self.env)
         dfe = kapp.load(app_id, query, fields)
 
+        return dfe
+
+    def file_to_df(self, byte_str):
+        fileio = BytesIO(byte_str)
+        columns = []
+        ftype_names = []
+        index = 0
+        for line in fileio:
+            items = line.decode("utf-8").split("\t")
+            items = [i.strip() for i in items]
+            if index == 0:
+                columns = items
+            elif index == 1:
+                ftype_names = items
+            index += 1
+            if index == 2:
+                break
+
+        df = pd.read_csv(fileio, encoding="utf-8", sep="\t")
+        df.columns = columns
+        ignored_columns = []
+        _ftype_names = {}
+        target = ""
+
+        index = 0
+        for c, fn in zip(columns, ftype_names):
+            if not fn:
+                ignored_columns.append(index)
+            else:
+                fn_attr = fn.split("/")
+                _fn = fn_attr[0]
+                attr = "" if len(fn_attr) == 1 else fn_attr[1]
+                
+                if attr == "PRED":
+                    ignored_columns.append(index)
+                elif attr == "TGT":
+                    target = c
+                    _ftype_names[c] = _fn
+                else:
+                    _ftype_names[c] = _fn
+
+            index += 1
+
+        ftypes = {}
+        for ftype in FTypeNames:
+            name = FTypeNames[ftype]
+            ftypes[ftype] = [k for k, v in _ftype_names.items() if v == name]
+
+        df.drop(df.columns[ignored_columns], axis=1, inplace=True)
+        dfe = DataFrameExtension(df, ftypes[FType.categorical], ftypes[FType.numerical], ftypes[FType.datetime], ftypes[FType.text], ftypes[FType.unique])
+        dfe.target = target
         return dfe

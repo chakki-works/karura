@@ -154,8 +154,33 @@
                 document.body.removeChild(link);
             }else{
                 Karura.show_notification("ダウンロード処理でエラーが発生しました", true);
+                console.log(content);
             }
 
+        });
+    }
+    
+    _karura.upload = function(app_id, file, record){
+        var payload = {
+            "format": "RAW",
+            "value": file
+        }
+        Karura.show_notification("ファイルから学習を開始しました．．．");
+        kintone.proxy.upload(Karura.KARURA_HOST + "/upload?app_id=" + app_id, "POST", {"Origin": location.origin}, payload).then(function(args){
+            var body = args[0];
+            var result = {};
+            try {
+                result = JSON.parse(body)
+            } catch (e) {
+                Karura.show_notification("学習中に時間がかかりすぎてしまいました。対象データ、また予測に使う項目を減らしてみてください。", true);
+            }
+            if("error" in result){
+                Karura.show_notification("学習中にエラーが発生しました。詳細は、コンソールを参照してください。", true);
+                console.log(result["error"]);
+            }else{
+                Karura.show_result(result, record);
+                Karura.show_notification("学習が完了しました！", false);
+            }
         });
     }
 
@@ -219,11 +244,14 @@ var KaruraElement = (function(){
         }
     }
 
-    _karuraElement.addButton = function(buttonId, title, callback){
+    _karuraElement.addButton = function(buttonId, title, callback, inline){
         var button = document.createElement("button");
         button.id = buttonId;
         button.innerHTML = title;
-        button.className = "btn-karura";  //align-float
+        button.className = "btn-karura";
+        if(inline){
+            button.className += " btn-inline";
+        }
         button.onclick = callback;
         kintone.app.record.getSpaceElement(buttonId).appendChild(button);
     }
@@ -242,7 +270,7 @@ var KaruraElement = (function(){
                     Karura.show_notification("モデルがまだ作成されていません", true);
                 }
             }
-        })
+        }, true)
     }
 
     return _karuraElement;
@@ -259,7 +287,7 @@ var KaruraElement = (function(){
             }else{
                 Karura.show_notification("アプリ番号がまだ入力されていません", true);
             }
-        })
+        }, true)
 
         KaruraElement.addButton("begin_train", "学習を開始する", function(){
             var record = kintone.app.record.get();
@@ -270,6 +298,34 @@ var KaruraElement = (function(){
                 Karura.show_notification("アプリ番号がまだ入力されていません", true);
             }
         })
+        
+        //add file upload field
+        var uploadArea = document.createElement("div");
+        uploadArea.id = "karura-upload"
+        var fileSelection = document.createElement("label");
+        var fileUpload = document.createElement("button");
+        fileSelection.innerHTML = "<input id='fileSelection' type='file' />"
+        fileUpload.id = "fileUpload"
+        fileUpload.innerHTML = "ファイルから学習を開始";
+        fileUpload.className = "btn-karura";
+        fileUpload.onclick = function(){
+            var record = kintone.app.record.get();
+            var app_id = record["record"]["app_id"]["value"];
+            if(app_id){
+                var selected = document.getElementById("fileSelection");
+                if(selected.files.length > 0){
+                    var file = selected.files[0];
+                    Karura.upload(app_id, file, record.record);
+                }else{
+                    Karura.show_notification("ファイルが選択されていません", true);
+                }
+            }else{
+                Karura.show_notification("アプリ番号がまだ入力されていません", true);
+            }
+        };
+        uploadArea.appendChild(fileSelection);
+        uploadArea.appendChild(fileUpload);
+        kintone.app.record.getSpaceElement("train_by_file").appendChild(uploadArea);
 
         //set download button
         KaruraElement.addDownloadButton(event);

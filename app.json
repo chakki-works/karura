@@ -11,13 +11,14 @@
       "description": "A secret key for verifying the integrity of signed cookies.",
       "generator": "secret"
     },
+    "PRIVATE_KEY": {
+      "description": "A secret key to encrypt user information.",
+      "generator": "secret"
+    },
     "LANG": {
       "description": "language that is used in karura.",
       "value": "ja"        
-    },
-    "PRIVATE_KEY": {
-      "description": "private key to encrypt."
     }
   },
-  "image": "registry.heroku.com/karura-server/web"
+  "image": "icoxfog417/karura-server"
 }

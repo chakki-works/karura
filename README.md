@@ -1,10 +1,45 @@
 # karura
 
-karura enables you to use machine learning interactively.
+karura enables you to use machine learning automatically & interactively.
 
-# Usage
+![karura_concept](./doc/karura_concept.png)
 
-## As Adviser on kintone
+## Architecture
+
+karura has insights. 
+
+Each insight gets the data and judges the necessity of its adoption, and if it needed, execute it.
+
+![insight.png](./doc/insight.png)
+
+For example, [`NAFrequencyCheckInsight`](https://github.com/chakki-works/karura/blob/master/karura/core/insights/na_frequency_insight.py) watches the amount of the `NA` in each column, and if it is too high, then drop the column. Of course, you can confirm it to the user.
+
+karura can have many insights, so you can add the insight as you needed. 
+
+![stack_insights](./doc/stack_insights.png)
+
+Insights are adopted according to the [InsightIndex](https://github.com/chakki-works/karura/blob/master/karura/core/insight.py#L61) order.  
+And you can create custom insight by inheriting the [`Insight`](https://github.com/chakki-works/karura/blob/master/karura/core/insight.py) class.
+
+
+## Usage
+
+### In the Jupyter Notebook
+
+You can use karura as your partner for data analytics.
+
+[karura notebook]()
+
+### As Slackbot
+
+You can communicate with karura on [Slack](https://slack.com/)!
+
+![karura_as_slackbot.PNG](./doc/karura_as_slackbot.PNG)
+
+When you upload the csv file or tell kintone app name to karura, then interaction starts.You can build your own machine learning model interactively, and also you can get some suggestions about the data treatment from karura.
+
+
+### As Adviser on kintone
 
 You can ask karura to analyze your kintone app!
 
@@ -16,39 +51,15 @@ You can ask karura to analyze your kintone app!
 
 Then, you can get analyzed result!
 
-## As Slackbot
+## Setup
 
-You can communicate with karura on [Slack](https://slack.com/)!
-
-![karura_as_slackbot.PNG](./doc/karura_as_slackbot.PNG)
-
-When you upload the csv file or tell kintone app name to karura, then interaction starts.You can build your own machine learning model interactively, and also you can get some suggestions about the data treatment from karura.
-
-# Architecture
-
-![karura_architecture.PNG](./doc/karura_architecture.PNG)
-
-karura automate the fundamental process of machine learning.
-
-* To propose the important factors for prediction, karura does not use Neural Network
-* You can use karura whenever you want, especially the phase that amounts of the data is not enough
-* **If amount of the data is enough, and karura tells you that the target is predictable, it is the timing that you have to use more powerful BI or machine learning platform**
-
-So, karura is the supporter to store the useful data for human and machine learning by enabling you everytime-easy-lightweight-prediction.
-
-# Setup
-
-## Slackbot
+### Slackbot
 
 * Use Dockerfile_slackbot
 * set below environmental variables
   * SLACK_TOKEN: Your Slack token
   * LANG: language that you want to use (`ja` or `en`)
 
-## with kintone
+### kintone
 
-* Prepare the kintone account
-* Push the following Heroku Button and setup the kerura server
-* Make Karura app on your kintone (comming soon!)
-* Change Karura server url on JavaScript customize (comming soon!)
-
+**[Tutorial is available (ja)](http://qiita.com/icoxfog417/private/ba6cc8c804f09fd2b16e)**

@@ -26,6 +26,14 @@ class PredictorConvertible():
             InsightIndex.MODEL_SELECTION
         ]
     
+    def set_target(self, target):
+        self.dfe.target = target
+
+    def ignore(self, ignore_or_ignores):
+        ignores = ignore_or_ignores if isinstance(ignore_or_ignores, (list, tuple)) else [ignore_or_ignores]
+        for i in ignores:
+            self.dfe.drop(i)
+
     def to_predictor(self):
         return Predictor.create(self.dfe, self.insights, self._tag_order)
 

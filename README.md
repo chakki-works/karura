@@ -22,13 +22,17 @@ Insights are adopted according to the [InsightIndex](https://github.com/chakki-w
 And you can create custom insight by inheriting the [`Insight`](https://github.com/chakki-works/karura/blob/master/karura/core/insight.py) class.
 
 
+**karura is multi-language application. Now supports `ja` and `en`.**  
+(Some message on kintone is only Japanese).
+
+
 ## Usage
 
 ### In the Jupyter Notebook
 
 You can use karura as your partner for data analytics.
 
-[karura notebook]()
+[karura notebook](https://github.com/chakki-works/karura/blob/master/doc/karura_notebook_demo.ipynb)
 
 ### As Slackbot
 

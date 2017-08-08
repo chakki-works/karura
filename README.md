@@ -52,5 +52,3 @@ So, karura is the supporter to store the useful data for human and machine learn
 * Make Karura app on your kintone (comming soon!)
 * Change Karura server url on JavaScript customize (comming soon!)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-

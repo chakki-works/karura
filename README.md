@@ -34,6 +34,32 @@ You can use karura as your partner for data analytics.
 
 [karura notebook](https://github.com/chakki-works/karura/blob/master/doc/karura_notebook_demo.ipynb)
 
+To install karura, pip install.
+
+```
+pip install karura
+```
+
+The dependencies as followings.
+
+* numpy
+* scipy
+* scikit-learn
+* matplotlib
+* pandas
+
+If you use Slack integration, additionally install below.
+
+* slackbot
+
+If you use kintone integration, additionally install below.
+
+* pykintone
+* tornado
+* cryptography
+* pymongo (Also needs MongoDB)
+
+
 ### As Slackbot
 
 You can communicate with karura on [Slack](https://slack.com/)!
